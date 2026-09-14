@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>聯合數字・生命地圖</title>
+  <style>
+    :root {
+      --bg-color: #0d0914;
+      --card-bg: #1c1328;
+      --card-border: #322346;
+      --gold-primary: #f3ca65;
+      --gold-secondary: #d4af37;
+      --text-light: #ece6f0;
+      --text-muted: #a497b5;
+      --accent-pink: #ff6b9d;
+      --accent-cyan: #4deeea;
+      --accent-green: #74ee15;
+      --accent-purple: #9d4edd;
+      --danger: #ff4757;
+      --radius: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-light);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+      line-height: 1.5;
+      padding: 16px 12px 40px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+      padding: 10px 0;
+    }
+
+    h1 {
+      color: var(--gold-primary);
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px rgba(243, 202, 101, 0.2);
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 4px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: block;
+      color: var(--gold-primary);
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      background: #110b1a;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      color: #fff;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--gold-primary);
+    }
+
+    .error-msg {
+      color: var(--danger);
+      font-size: 0.8rem;
+      margin-top: 4px;
+      display: none;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--gold-primary), var(--gold-secondary));
+      color: #110b1a;
+    }
+
+    .btn-secondary {
+      background: #2a1f3d;
+      color: var(--text-light);
+      border: 1px solid var(--card-border);
+    }
+
+    .btn-share {
+      background: linear-gradient(135deg, #7928ca, #ff0080);
+      color: #fff;
+      width: 100%;
+      margin-top: 15px;
+      padding: 14px;
+      font-size: 1.05rem;
+      box-shadow: 0 4px 15px rgba(255, 0, 128, 0.3);
+    }
+
+    .result-section {
+      display: none;
+    }
+
+    .user-info-header {
+      text-align: center;
+      border-bottom: 1px dashed var(--card-border);
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+    }
+
+    .user-info-header h2 {
+      color: var(--gold-primary);
+      font-size: 1.4rem;
+    }
+
+    .user-info-details {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 4px;
+    }
+
+    /* Map Box Styling */
+    .map-container {
+      position: relative;
+      width: 100%;
+      background: #120c1d;
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 20px 10px;
+      margin-bottom: 24px;
+    }
+
+    .map-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      align-items: center;
+      text-align: center;
+    }
+
+    .node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      aspect-ratio: 1;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 1.1rem;
+      background: #1c1328;
+      border: 1px solid #322346;
+      position: relative;
+    }
+
+    .node .label {
+      font-size: 0.6rem;
+      color: var(--text-muted);
+      position: absolute;
+      top: 2px;
+      font-weight: normal;
+    }
+
+    .node .val {
+      margin-top: 8px;
+    }
+
+    /* Specific node colors */
+    .n-gold { border-color: var(--gold-primary); color: var(--gold-primary); }
+    .n-pink { border-color: var(--accent-pink); color: var(--accent-pink); }
+    .n-cyan { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+    .n-green { border-color: var(--accent-green); color: var(--accent-green); }
+    .n-purple { border-color: var(--accent-purple); color: var(--accent-purple); }
+
+    .map-row {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .map-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .map-box {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background: #1a1226;
+      border: 1px solid #38284e;
+      font-weight: bold;
+    }
+
+    .map-box .lbl {
+      font-size: 0.55rem;
+      color: var(--text-muted);
+      line-height: 1;
+    }
+
+    .map-box .num {
+      font-size: 1.1rem;
+      line-height: 1.2;
+    }
+
+    .section-title {
+      color: var(--gold-primary);
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin: 24px 0 12px;
+      padding-left: 8px;
+      border-left: 4px solid var(--gold-primary);
+    }
+
+    .stage-card {
+      background: #170f23;
+      border-left: 3px solid var(--gold-primary);
+      margin-bottom: 12px;
+      padding: 12px 14px;
+      border-radius: 4px 8px 8px 4px;
+    }
+
+    .stage-header {
+      font-size: 0.95rem;
+      color: var(--gold-primary);
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .stage-items {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .stage-item {
+      font-size: 0.85rem;
+      color: var(--text-light);
+      background: #211632;
+      padding: 6px 10px;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .stage-item span.num {
+      color: var(--gold-primary);
+      font-weight: bold;
+    }
+
+    .interp-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .interp-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 8px;
+    }
+
+    .interp-num-tag {
+      background: linear-gradient(135deg, var(--gold-primary), var(--gold-secondary));
+      color: #0d0914;
+      font-weight: bold;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+
+    .interp-cat {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .interp-title {
+      color: var(--gold-primary);
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .interp-desc {
+      color: var(--text-light);
+      font-size: 0.88rem;
+      white-space: pre-line;
+      text-align: justify;
+    }
+
+    /* Fullscreen Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 1000;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+      max-width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.8);
+    }
+
+    .modal-content img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .modal-btns {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+      max-width: 400px;
+      margin-top: 16px;
+    }
+
+    .disclaimer {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 30px;
+      padding: 0 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>聯合數字・生命地圖</h1>
+    <div class="subtitle">探索先天基因與人生軌跡的數字密碼</div>
+  </header>
+
+  <div class="card">
+    <div class="form-group">
+      <label for="userName">姓名</label>
+      <input type="text" id="userName" placeholder="請輸入姓名" autocomplete="off">
+    </div>
+
+    <div class="form-group">
+      <label for="userDob">出生日期 (日/月/年)</label>
+      <input type="text" id="userDob" inputmode="numeric" placeholder="01/01/1980" maxlength="10">
+      <div id="dobError" class="error-msg">請輸入有效的日期 (格式: DD/MM/YYYY)</div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn-primary" onclick="generateMap()">生成生命地圖</button>
+      <button class="btn-secondary" onclick="resetForm()">重設</button>
+    </div>
+  </div>
+
+  <div id="resultSection" class="result-section">
+    <div class="card">
+      <div class="user-info-header">
+        <h2 id="resName">--</h2>
+        <div class="user-info-details">
+          出生日期: <span id="resDob">--</span> | 年齡: <span id="resAge">--</span> 歲
+        </div>
+      </div>
+
+      <!-- Diagram Representation -->
+      <div class="map-container">
+        <!-- Row 1: Root Numbers -->
+        <div class="map-row">
+          <div class="map-box n-gold"><span class="lbl">A</span><span class="num" id="nodeA">-</span></div>
+          <div class="map-box n-gold"><span class="lbl">B</span><span class="num" id="nodeB">-</span></div>
+          <div class="map-box n-gold"><span class="lbl">C</span><span class="num" id="nodeC">-</span></div>
+          <div class="map-box n-gold"><span class="lbl">D</span><span class="num" id="nodeD">-</span></div>
+        </div>
+        <!-- Row 2: Parents / Inner -->
+        <div class="map-row">
+          <div class="map-box n-pink"><span class="lbl">E</span><span class="num" id="nodeE">-</span></div>
+          <div class="map-box n-pink"><span class="lbl">F</span><span class="num" id="nodeF">-</span></div>
+        </div>
+        <!-- Row 3: Core Destiny -->
+        <div class="map-row">
+          <div class="map-box n-cyan"><span class="lbl">G</span><span class="num" id="nodeG">-</span></div>
+        </div>
+        <!-- Row 4: Outer Wings / Processes -->
+        <div class="map-row">
+          <div class="map-box n-purple"><span class="lbl">H</span><span class="num" id="nodeH">-</span></div>
+          <div class="map-box n-purple"><span class="lbl">M</span><span class="num" id="nodeM">-</span></div>
+          <div class="map-box n-purple"><span class="lbl">P</span><span class="num" id="nodeP">-</span></div>
+          <div class="map-box n-purple"><span class="lbl">Q</span><span class="num" id="nodeQ">-</span></div>
+          <div class="map-box n-purple"><span class="lbl">I</span><span class="num" id="nodeI">-</span></div>
+          <div class="map-box n-purple"><span class="lbl">K</span><span class="num" id="nodeK">-</span></div>
+        </div>
+        <!-- Row 5: Final Outcomes -->
+        <div class="map-row">
+          <div class="map-box n-green"><span class="lbl">L</span><span class="num" id="nodeL">-</span></div>
+          <div class="map-box n-green"><span class="lbl">R</span><span class="num" id="nodeR">-</span></div>
+          <div class="map-box n-green"><span class="lbl">J</span><span class="num" id="nodeJ">-</span></div>
+        </div>
+      </div>
+
+      <button class="btn-share" onclick="generateAndShowImage()">儲存圖片到相簿</button>
+    </div>
+
+    <!-- Three-Stage Section -->
+    <div class="section-title">人生黃金20年・三階段</div>
+    <div class="stage-card">
+      <div class="stage-header">早年（21–40歲）</div>
+      <div class="stage-items">
+        <div class="stage-item"><span>1. 父基因</span><span class="num" id="stg1">-</span></div>
+        <div class="stage-item"><span>7. 事業過程</span><span class="num" id="stg7">-</span></div>
+        <div class="stage-item"><span>8. 事業過程</span><span class="num" id="stg8">-</span></div>
+        <div class="stage-item"><span>9. 工作/朋友</span><span class="num" id="stg9">-</span></div>
+      </div>
+    </div>
+
+    <div class="stage-card">
+      <div class="stage-header">中年（41–60歲）</div>
+      <div class="stage-items">
+        <div class="stage-item"><span>3. 主性格</span><span class="num" id="stg3">-</span></div>
+        <div class="stage-item"><span>4. 人生過程</span><span class="num" id="stg4">-</span></div>
+        <div class="stage-item"><span>5. 人生過程</span><span class="num" id="stg5">-</span></div>
+        <div class="stage-item"><span>6. 子女/下屬</span><span class="num" id="stg6">-</span></div>
+      </div>
+    </div>
+
+    <div class="stage-card">
+      <div class="stage-header">晚年／婚姻（61歲後・家庭／健康）</div>
+      <div class="stage-items">
+        <div class="stage-item"><span>2. 母基因</span><span class="num" id="stg2">-</span></div>
+        <div class="stage-item"><span>10. 婚姻過程</span><span class="num" id="stg10">-</span></div>
+        <div class="stage-item"><span>11. 婚姻過程</span><span class="num" id="stg11">-</span></div>
+        <div class="stage-item"><span>12. 晚年</span><span class="num" id="stg12">-</span></div>
+      </div>
+    </div>
+
+    <!-- 13 Interpretations -->
+    <div class="section-title">13 組聯合數字解析</div>
+    <div id="interpretationsContainer"></div>
+
+    <div class="disclaimer">
+      本工具計算結果僅供參考與自我探索之用，請理性對待。
+    </div>
+  </div>
+
+  <!-- Fullscreen Modal Preview -->
+  <div id="previewModal" class="modal-overlay">
+    <div class="modal-content">
+      <img id="previewImg" src="" alt="生命地圖">
+    </div>
+    <div class="modal-btns">
+      <button class="btn-primary" onclick="shareOrSaveImage()">分享／儲存</button>
+      <button class="btn-secondary" onclick="closeModal()">關閉</button>
+    </div>
+  </div>
+
+  <script>
+    // 81 Combinations Interpretation Lookup Table
+    const DB_81 = {
+      "112": { title: "獨立領袖數", desc: "具備強烈獨立性與開創精神，凡事習慣靠自己。有領導潛質，但需防範孤軍作戰或給人距離感。" },
+      "123": { title: "敏銳溝通數", desc: "表達能力強，思維敏銳，極具説服力。能善用說話藝術發揮影響力，但需注意說話直白易生誤會。" },
+      "134": { title: "行動衝刺数", desc: "做事有衝勁、執行力極高，不甘落後。具開創市場的魄力，但偶爾性子較急，需要提升耐心。" },
+      "145": { title: "策劃組織數", desc: "條理分明、善於規劃與分析，具備極強的組織能力。能有條不紊地執行大專案，需放鬆過度謹慎的心態。" },
+      "156": { title: "目標財富數", desc: "對目標高度專注，具商業敏銳度與財富號召力。堅持目標必達，但需兼顧人情世故。" },
+      "167": { title: "人緣貴人數", desc: "自帶貴人運，極具親和力與社交魅力。懂得運用資源成就事業，需保持真誠才能維持長久助力。" },
+      "178": { title: "權威領導數", desc: "具強烈企圖心與大將之風，能在領域中展現專業權威。承擔責任能力強，需預防壓力過大。" },
+      "189": { title: "遠見成就數", desc: "眼光長遠，擁有宏大的格局與理想。容易獲得大眾認可，需留意步調太快讓身邊的人跟不上。" },
+      "191": { title: "開拓創始數", desc: "不斷自我超越，喜歡挑戰新領域。具創始者精神，但需注意有頭無尾，持續力是成功關鍵。" },
+
+      "213": { title: "靈敏表達數", desc: "觀察入微，善於察言觀色並精準表達。適合從事溝通、諮詢或服務相關工作。" },
+      "224": { title: "溫和穩健數", desc: "性格溫和、做事細緻，追求穩定與安全感。值得信賴，但有時缺乏點破局的勇氣。" },
+      "235": { title: "情緒爆發數", desc: "直覺強烈、感受力豐富，行動往往隨心而動。具有強大爆發力，但需好好控管情緒波動。" },
+      "246": { title: "貼心服務數", desc: "充滿愛心與責任感，善於照顧他人需求。深受他人信賴，需懂得設立界線以免透支自己。" },
+      "257": { title: "交際貴人數", desc: "交友廣闊，能靈活應對各種社交場合。貴人運佳，但要慎選真正值得深交的朋友。" },
+      "268": { title: "商業談判數", desc: "具備極佳的商務談判與利益整合能力。能在合作中達成共贏，需注意勿過度算計。" },
+      "279": { title: "大愛包容數", desc: "具親和力與同理心，樂於助人。在團體中是良好的協調者，需防範過度妥協失去原則。" },
+      "281": { title: "穩健執行數", desc: "行事默默耕耘、務實且有耐力。能靠時間積累成果，需多提升主動溝通的意願。" },
+      "291": { title: "智慧協調數", desc: "具柔中帶剛的智慧，能化干戈為玉帛。適合擔任協調人或顧問角色。" },
+
+      "314": { title: "衝勁突破數", desc: "行動敏捷、敢於突破現狀。不怕面對挑戰，但行動前多思考一步能減少不必要的挫折。" },
+      "325": { title: "靈活應變數", desc: "反應迅速、隨機應變能力極佳。適合快速變化的環境，但需加強專注度。" },
+      "336": { title: "熱情展現數", desc: "性格直爽熱情，感染力強。具極高創造力與藝術感知，但要注意脾氣來得快去得快。" },
+      "347": { title: "求知探索數", desc: "對新事物抱持好奇心，分析力強。喜歡深入研究，需防止落入想得多做得少的圈套。" },
+      "358": { title: "冒險富貴數", desc: "敢冒風險、具備極佳的商業嗅覺。能把握時機迎來突破，但要控制投資風險。" },
+      "369": { title: "靈感智慧數", desc: "思維活躍、富有直覺與靈感。具遠大理想，若能落實行動必能創造卓越成就。" },
+      "371": { title: "果斷決策數", desc: "敢作敢當，決策迅速不拖泥帶水。具領袖風範，但需留心傾聽團隊的不同聲音。" },
+      "382": { title: "實務熱情數", desc: "將熱情轉化為實質行動，做事實事求是。能獲得長輩與主管賞識。" },
+      "393": { title: "創意無限數", desc: "創意源源不絕，不喜墨守成規。適合從事創新或藝術相關領域。" },
+
+      "415": { title: "規律突破數", desc: "在傳統架構中尋求創新突破。重視秩序同時又具備變革思維。" },
+      "426": { title: "安全穩定數", desc: "重視家庭與安全感，做事踏實可靠。是團隊中堅實的後盾。" },
+      "437": { title: "邏輯分析數", desc: "邏輯極度嚴密，善於發現細節漏洞。求知慾強，但有時過於求全責備。" },
+      "448": { title: "穩固基業數", desc: "一步一腳印，具備極強的建構與組織能力。能建立持久穩固的事業基石。" },
+      "459": { title: "大局規劃數", desc: "眼光全面，善於制定長遠戰略規劃。能兼顧安全與發展。" },
+      "461": { title: "務實領導數", desc: "以身作則，用實際作為建立權威。深受下屬信任與尊重。" },
+      "478": { title: "專業研究數", desc: "深耕專業領域，容易成為專家或權威。需要多參與社交拓展視野。" },
+      "482": { title: "資源管理數", desc: "對資源、資金的控管極具天賦。適合財務、營運管理等職務。" },
+      "494": { title: "系統整合數", desc: "善於將複雜事物系統化、條理化。效率極高，深受依賴。" },
+
+      "516": { title: "自由開拓數", desc: "不喜受拘束，具備開創精神。喜歡探索新市場與新機會。" },
+      "527": { title: "人際橋梁數", desc: "社交能力強，善於串聯各方資源。是出色的公關與資源整合者。" },
+      "538": { title: "快速決策數", desc: "市場反應極快，能迅速抓住商機。要注意節奏轉換，避免太躁進。" },
+      "549": { title: "長遠自由數", desc: "追求心靈與事業的自由，格局宏大。能開創獨樹一幟的事業體。" },
+      "551": { title: "強效突破數", desc: "擁有極強的個人意志力與突破力。能打破僵局，開創新局。" },
+      "562": { title: "靈活商務數", desc: "在商業合作中極具彈性，能隨時調整策略以達成功。" },
+      "573": { title: "貴人開運數", desc: "容易吸引有實力的貴人相助。善用人際網路能讓事業事半功倍。" },
+      "583": { title: "敏銳投資數", desc: "投資嗅覺靈敏，敢於嘗試新模式。需維持理性分析，切忌盲從。" },
+      "595": { title: "變革領袖數", desc: "具備強大的個人魅力與變革號召力。適合領軍打仗開創新事業。" },
+
+      "617": { title: "財富貴人數", desc: "財運與貴人運相輔相成，善於運用資金與人脈創造更大價值。" },
+      "628": { title: "穩健財富數", desc: "理財觀念成熟，注重風險控制。財富呈穩定成長趨勢。" },
+      "639": { title: "智慧造財數", desc: "靠智慧與創意獲取財富。懂得將知識與點子轉化為金錢。" },
+      "641": { title: "事業基財數", desc: "事業根基紮實，能帶來穩定豐厚的經濟回報。" },
+      "652": { title: "靈活理財數", desc: "資金調度靈活，善於發現潛在獲利點。" },
+      "6612": { title: "雙重財庫數", desc: "財庫豐盈，具備極強的聚財能力。需多做公益積累福報。" },
+      "674": { title: "貴人助財數", desc: "常得貴人指點與資助，獲取資源相對順利。" },
+      "685": { title: "大業宏財數", desc: "適合運作大專案或大資金，商業格局龐大。" },
+      "6915": { title: "回饋分享數", desc: "懂得取之於社會用之於社會，越分享越富有。" },
+
+      "718": { title: "貴人相助數", desc: "一生貴人運極強，每逢關鍵時刻總有人挺身相助。" },
+      "729": { title: "和諧人脈數", desc: "人緣極佳，個性討喜，能建立廣泛而良好的人際關係。" },
+      "731": { title: "快速貴人數", desc: "能迅速結識並獲得高人指點，加速事業發展。" },
+      "742": { title: "穩固人際數", desc: "朋友關係長久且穩固，彼此信任度極高。" },
+      "753": { title: "動態貴人數", desc: "在移動、出差或跨界合作中容易遇到貴人。" },
+      "764": { title: "事業貴人數", desc: "事業上有強而有力的合作夥伴或長官拉拔。" },
+      "775": { title: "貴人蜂擁數", desc: "社交影響力大，身邊聚集眾多優質資源與人才。" },
+      "786": { title: "權威貴人數", desc: "容易獲得權威人士或產業巨頭的青睞與資源挹注。" },
+      "797": { title: "智慧導師數", desc: "自身也能成為他人的貴人與精神導師。" },
+
+      "819": { title: "權威責任數", desc: "承擔重任，具備極高的管理天賦與控制力。" },
+      "821": { title: "溝通領導數", desc: "善於用語言展現領導力，深具説服與鼓舞人心的能力。" },
+      "832": { title: "執行權威數", desc: "行動果決，在專案管理上有條不紊。" },
+      "843": { title: "專業管理數", desc: "靠專業能力建立權威，組織管理井井有條。" },
+      "854": { title: "穩健擴展數", desc: "在控制風險的前提下持續擴大事業版圖。" },
+      "865": { title: "財富權力數", desc: "掌握實權與財富，適合高層決策與管理職位。" },
+      "876": { title: "貴人高升數", desc: "在貴人提拔下不斷晉升，位居要職。" },
+      "887": { title: "頂峰影響數", desc: "在行業中具有舉足輕重的影響力與決策權。" },
+      "897": { title: "宏圖大業數", desc: "具備宏觀戰略思考，能帶領企業走向高峰。" },
+
+      "911": { title: "大愛開創數", desc: "胸懷大志，充滿人道主義精神，樂於開創造福大眾的事業。" },
+      "923": { title: "靈性表達數", desc: "感受力深刻，能將高維智慧用通俗語言傳達。" },
+      "934": { title: "創意落實數", desc: "能將遠大的理想與創意轉化為可執行的實體專案。" },
+      "944": { title: "穩健遠見數", desc: "既有長遠眼光，又能扎紮實實打好底子。" },
+      "954": { title: "變革遠景數", desc: "引領產業或團隊邁向新的願景與目標。" },
+      "966": { title: "智慧財富數", desc: "用智慧創造財富，並能妥善運用財富回饋社會。" },
+      "976": { title: "成就貴人數", desc: "成就他人的同時也成就自己，影響力深遠。" },
+      "988": { title: "頂峰成就數", desc: "在事業與人生理想上達到極高成就與圓滿。" },
+      "999": { title: "圓滿智慧數", desc: "具備高度智慧與包容心，人生歷練圓融無礙。" }
+    };
+
+    // Auto-format DOB input with slashes
+    const dobInput = document.getElementById('userDob');
+    dobInput.addEventListener('input', function(e) {
+      let v = e.target.value.replace(/\D/g, '');
+      if (v.length > 8) v = v.substring(0, 8);
+      if (v.length >= 5) {
+        v = v.substring(0, 2) + '/' + v.substring(2, 4) + '/' + v.substring(4);
+      } else if (v.length >= 3) {
+        v = v.substring(0, 2) + '/' + v.substring(2);
+      }
+      e.target.value = v;
+    });
+
+    // Helper: Digit reduction function
+    function reduceNum(n) {
+      let s = n.toString().split('').reduce((a, b) => a + parseInt(b, 10), 0);
+      while (s > 9) {
+        s = s.toString().split('').reduce((a, b) => a + parseInt(b, 10), 0);
+      }
+      return s;
+    }
+
+    // Single digit addition reduction for Item 13 calculation
+    function addAndReduceDigit(d) {
+      let doubled = parseInt(d, 10) * 2;
+      return reduceNum(doubled);
+    }
+
+    // Validate DD/MM/YYYY
+    function isValidDate(dStr) {
+      if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dStr)) return false;
+      const parts = dStr.split('/');
+      const day = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1;
+      const year = parseInt(parts[2], 10);
+
+      const d = new Date(year, month, day);
+      if (d.getFullYear() !== year || d.getMonth() !== month || d.getDate() !== day) return false;
+
+      const today = new Date();
+      today.setHours(23, 59, 59, 999);
+      if (d > today) return false;
+
+      return true;
+    }
+
+    // Calculate Exact Age according to today's date
+    function calcAge(dStr) {
+      const parts = dStr.split('/');
+      const birthDate = new Date(parts[2], parts[1] - 1, parts[0]);
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      return age;
+    }
+
+    let calculatedData = null;
+
+    function generateMap() {
+      const name = document.getElementById('userName').value.trim() || '使用者';
+      const dob = document.getElementById('userDob').value.trim();
+      const errElem = document.getElementById('dobError');
+
+      if (!isValidDate(dob)) {
+        errElem.style.display = 'block';
+        return;
+      }
+      errElem.style.display = 'none';
+
+      const age = calcAge(dob);
+
+      // Exact Logic Formulas
+      const parts = dob.split('/');
+      const dayStr = parts[0];
+      const monthStr = parts[1];
+      const yearStr = parts[2];
+
+      const A = reduceNum(dayStr);
+      const B = reduceNum(monthStr);
+      const C = reduceNum(yearStr.substring(0, 2));
+      const D = reduceNum(yearStr.substring(2, 4));
+
+      const E = reduceNum(A + B);
+      const F = reduceNum(C + D);
+      const G = reduceNum(E + F);
+
+      const P = reduceNum(E + G);
+      const Q = reduceNum(F + G);
+      const R = reduceNum(P + Q);
+
+      const H = reduceNum(A + E);
+      const M = reduceNum(B + E);
+      const L = reduceNum(H + M);
+
+      const I = reduceNum(C + F);
+      const K = reduceNum(D + F);
+      const J = reduceNum(I + K);
+
+      // Build 12 primary combinations
+      const items = [
+        { id: 1, name: "父基因（事業）", code: `${A}${B}${E}` },
+        { id: 2, name: "母基因（婚姻）", code: `${C}${D}${F}` },
+        { id: 3, name: "主性格", code: `${E}${F}${G}` },
+        { id: 4, name: "人生過程", code: `${E}${G}${P}` },
+        { id: 5, name: "人生過程", code: `${F}${G}${Q}` },
+        { id: 6, name: "子女／下屬", code: `${Q}${P}${R}` },
+        { id: 7, name: "事業過程", code: `${A}${E}${H}` },
+        { id: 8, name: "事業過程", code: `${B}${E}${M}` },
+        { id: 9, name: "工作／朋友", code: `${H}${M}${L}` },
+        { id: 10, name: "婚姻過程", code: `${C}${F}${I}` },
+        { id: 11, name: "婚姻過程", code: `${D}${F}${K}` },
+        { id: 12, name: "晚年", code: `${I}${K}${J}` }
+      ];
+
+      // Item 13: 隱藏號碼 (digit-by-digit self addition & reduction on Item 3)
+      const item3Code = items[2].code;
+      const d1 = addAndReduceDigit(item3Code[0]);
+      const d2 = addAndReduceDigit(item3Code[1]);
+      const d3 = addAndReduceDigit(item3Code[2]);
+      const item13Code = `${d1}${d2}${d3}`;
+
+      items.push({ id: 13, name: "隱藏號碼", code: item13Code });
+
+      calculatedData = { name, dob, age, rawNodes: { A, B, C, D, E, F, G, H, M, P, Q, I, K, L, R, J }, items };
+
+      // Render Header
+      document.getElementById('resName').innerText = name;
+      document.getElementById('resDob').innerText = dob;
+      document.getElementById('resAge').innerText = age;
+
+      // Render Node Diagram UI
+      const nodes = calculatedData.rawNodes;
+      for (let k in nodes) {
+        const elem = document.getElementById(`node${k}`);
+        if (elem) elem.innerText = nodes[k];
+      }
+
+      // Render Three Stages
+      document.getElementById('stg1').innerText = items[0].code;
+      document.getElementById('stg7').innerText = items[6].code;
+      document.getElementById('stg8').innerText = items[7].code;
+      document.getElementById('stg9').innerText = items[8].code;
+
+      document.getElementById('stg3').innerText = items[2].code;
+      document.getElementById('stg4').innerText = items[3].code;
+      document.getElementById('stg5').innerText = items[4].code;
+      document.getElementById('stg6').innerText = items[5].code;
+
+      document.getElementById('stg2').innerText = items[1].code;
+      document.getElementById('stg10').innerText = items[9].code;
+      document.getElementById('stg11').innerText = items[10].code;
+      document.getElementById('stg12').innerText = items[11].code;
+
+      // Render 13 Interpretations
+      const container = document.getElementById('interpretationsContainer');
+      container.innerHTML = '';
+
+      items.forEach(item => {
+        const lookup = DB_81[item.code] || { title: "特質組合", desc: "具備獨特的能量組合，展現特有的發展潛力與個人天賦。" };
+        const card = document.createElement('div');
+        card.className = 'interp-card';
+        card.innerHTML = `
+          <div class="interp-header">
+            <span class="interp-cat">${item.id}.${item.name}</span>
+            <span class="interp-num-tag">${item.code}</span>
+          </div>
+          <div class="interp-title">${lookup.title}</div>
+          <div class="interp-desc">${lookup.desc}</div>
+        `;
+        container.appendChild(card);
+      });
+
+      document.getElementById('resultSection').style.display = 'block';
+      document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetForm() {
+      document.getElementById('userName').value = '';
+      document.getElementById('userDob').value = '';
+      document.getElementById('dobError').style.display = 'none';
+      document.getElementById('resultSection').style.display = 'none';
+      calculatedData = null;
+      closeModal();
+    }
+
+    // Canvas Image Generator
+    let currentBlobUrl = null;
+
+    function generateAndShowImage() {
+      if (!calculatedData) return;
+
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const width = 750;
+      // Fixed comfortable height to accommodate diagram, stages and 13 cards
+      const height = 3100;
+
+      canvas.width = width;
+      canvas.height = height;
+
+      // Background
+      ctx.fillStyle = '#0d0914';
+      ctx.fillRect(0, 0, width, height);
+
+      // Header Title
+      ctx.fillStyle = '#f3ca65';
+      ctx.font = 'bold 36px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('聯合數字・生命地圖', width / 2, 70);
+
+      // User info
+      ctx.fillStyle = '#a497b5';
+      ctx.font = '22px sans-serif';
+      ctx.fillText(`姓名: ${calculatedData.name}   |   生日: ${calculatedData.dob}   \vert{}   年齡: ${calculatedData.age} 歲`, width / 2, 115);
+
+      // Map Box Drawing Helper
+      function drawBox(label, val, x, y, size = 50, color = '#f3ca65') {
+        ctx.fillStyle = '#1a1226';
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(x - size/2, y - size/2, size, size, 8);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#a497b5';
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(label, x, y - size/2 + 14);
+
+        ctx.fillStyle = color;
+        ctx.font = 'bold 22px sans-serif';
+        ctx.fillText(val, x, y + 14);
+      }
+
+      // Draw Map Panel
+      let startY = 170;
+      ctx.fillStyle = '#120c1d';
+      ctx.strokeStyle = '#322346';
+      ctx.beginPath();
+      ctx.roundRect(40, startY, width - 80, 260, 16);
+      ctx.fill();
+      ctx.stroke();
+
+      const n = calculatedData.rawNodes;
+      // Row 1
+      drawBox('A', n.A, 250, startY + 45, 46, '#f3ca65');
+      drawBox('B', n.B, 330, startY + 45, 46, '#f3ca65');
+      drawBox('C', n.C, 420, startY + 45, 46, '#f3ca65');
+      drawBox('D', n.D, 500, startY + 45, 46, '#f3ca65');
+
+      // Row 2
+      drawBox('E', n.E, 290, startY + 100, 46, '#ff6b9d');
+      drawBox('F', n.F, 460, startY + 100, 46, '#ff6b9d');
+
+      // Row 3
+      drawBox('G', n.G, 375, startY + 150, 46, '#4deeea');
+
+      // Row 4
+      drawBox('H', n.H, 130, startY + 200, 42, '#9d4edd');
+      drawBox('M', n.M, 210, startY + 200, 42, '#9d4edd');
+      drawBox('P', n.P, 290, startY + 200, 42, '#9d4edd');
+      drawBox('Q', n.Q, 460, startY + 200, 42, '#9d4edd');
+      drawBox('I', n.I, 540, startY + 200, 42, '#9d4edd');
+      drawBox('K', n.K, 620, startY + 200, 42, '#9d4edd');
+
+      // Row 5
+      drawBox('L', n.L, 170, startY + 242, 42, '#74ee15');
+      drawBox('R', n.R, 375, startY + 242, 42, '#74ee15');
+      drawBox('J', n.J, 580, startY + 242, 42, '#74ee15');
+
+      // Section Title Helper
+      function drawSectionTitle(text, y) {
+        ctx.fillStyle = '#f3ca65';
+        ctx.font = 'bold 24px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillRect(40, y, 6, 26);
+        ctx.fillText(text, 56, y + 22);
+      }
+
+      // Three Stages Section
+      let curY = 470;
+      drawSectionTitle('人生黃金20年・三階段', curY);
+      curY += 45;
+
+      function drawStageBox(title, itemsList, y) {
+        ctx.fillStyle = '#170f23';
+        ctx.strokeStyle = '#f3ca65';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.roundRect(40, y, width - 80, 80, 8);
+        ctx.fill();
+
+        ctx.fillStyle = '#f3ca65';
+        ctx.font = 'bold 18px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(title, 60, y + 30);
+
+        ctx.fillStyle = '#ece6f0';
+        ctx.font = '16px sans-serif';
+        let xPos = 60;
+        itemsList.forEach((it, idx) => {
+          ctx.fillText(`${it.lbl}: `, xPos, y + 60);
+          ctx.fillStyle = '#f3ca65';
+          ctx.fillText(it.val, xPos + ctx.measureText(`${it.lbl}: `).width, y + 60);
+          ctx.fillStyle = '#ece6f0';
+          xPos += 160;
+        });
+      }
+
+      const items = calculatedData.items;
+      drawStageBox('早年（21–40歲）', [
+        { lbl: '1.父基因', val: items[0].code },
+        { lbl: '7.事業', val: items[6].code },
+        { lbl: '8.事業', val: items[7].code },
+        { lbl: '9.工作', val: items[8].code }
+      ], curY);
+      curY += 95;
+
+      drawStageBox('中年（41–60歲）', [
+        { lbl: '3.主性格', val: items[2].code },
+        { lbl: '4.過程', val: items[3].code },
+        { lbl: '5.過程', val: items[4].code },
+        { lbl: '6.子女', val: items[5].code }
+      ], curY);
+      curY += 95;
+
+      drawStageBox('晚年／婚姻（61歲後・家庭／健康）', [
+        { lbl: '2.母基因', val: items[1].code },
+        { lbl: '10.婚姻', val: items[9].code },
+        { lbl: '11.婚姻', val: items[10].code },
+        { lbl: '12.晚年', val: items[11].code }
+      ], curY);
+      curY += 115;
+
+      // Interpretations Section
+      drawSectionTitle('13 組聯合數字解析', curY);
+      curY += 45;
+
+      items.forEach((item) => {
+        const lookup = DB_81[item.code] || { title: "特質組合", desc: "具備獨特的能量組合，展現特有的發展潛力與個人天賦。" };
+
+        ctx.fillStyle = '#1c1328';
+        ctx.strokeStyle = '#322346';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.roundRect(40, curY, width - 80, 130, 12);
+        ctx.fill();
+        ctx.stroke();
+
+        // Tag
+        ctx.fillStyle = '#f3ca65';
+        ctx.beginPath();
+        ctx.roundRect( width - 150, curY + 16, 90, 28, 4);
+        ctx.fill();
+
+        ctx.fillStyle = '#0d0914';
+        ctx.font = 'bold 16px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(item.code, width - 105, curY + 36);
+
+        // Label
+        ctx.fillStyle = '#a497b5';
+        ctx.font = '16px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(`${item.id}.${item.name}`, 60, curY + 36);
+
+        // Title
+        ctx.fillStyle = '#f3ca65';
+        ctx.font = 'bold 18px sans-serif';
+        ctx.fillText(lookup.title, 60, curY + 68);
+
+        // Desc
+        ctx.fillStyle = '#ece6f0';
+        ctx.font = '15px sans-serif';
+        
+        // Multi-line wrap
+        const words = lookup.desc;
+        let line = '';
+        let lineY = curY + 94;
+        for (let n = 0; n < words.length; n++) {
+          let testLine = line + words[n];
+          if (ctx.measureText(testLine).width > width - 140) {
+            ctx.fillText(line, 60, lineY);
+            line = words[n];
+            lineY += 20;
+          } else {
+            line = testLine;
+          }
+        }
+        ctx.fillText(line, 60, lineY);
+
+        curY += 145;
+      });
+
+      // Disclaimer
+      ctx.fillStyle = '#a497b5';
+      ctx.font = '14px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('本工具計算結果僅供參考與自我探索之用，請理性對待。', width / 2, height - 30);
+
+      // Convert Canvas to Blob & Preview Image
+      canvas.toBlob((blob) => {
+        if (currentBlobUrl) URL.revokeObjectURL(currentBlobUrl);
+        currentBlobUrl = URL.createObjectURL(blob);
+        document.getElementById('previewImg').src = currentBlobUrl;
+        document.getElementById('previewModal').style.display = 'flex';
+      }, 'image/png');
+    }
+
+    async function shareOrSaveImage() {
+      if (!currentBlobUrl) return;
+
+      const response = await fetch(currentBlobUrl);
+      const blob = await response.blob();
+      const file = new File([blob], `生命地圖_${calculatedData.name}.png`, { type: 'image/png' });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            title: '生命地圖',
+            text: `${calculatedData.name} 的生命地圖`,
+            files: [file]
+          });
+        } catch (err) {
+          // User cancelled or share failed
+        }
+      } else {
+        alert('請長按預覽圖即可儲存至相簿。');
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('previewModal').style.display = 'none';
+      if (currentBlobUrl) {
+        URL.revokeObjectURL(currentBlobUrl);
+        currentBlobUrl = null;
+      }
+    }
+  </script>
+</body>
+</html>
