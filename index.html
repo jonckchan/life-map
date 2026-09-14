@@ -1,0 +1,391 @@
+<!doctype html>
+<!-- Gemini export: Updated with dynamic 5-Elements (五行) Analysis Section.
+     Preserves all 81-number lookup tables, calculation formulas, age tracking, 
+     PNG export with auto-height adjustment, 13-item display, and Reset functionality. -->
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#171019">
+<title>聯合數字・生命地圖</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23171019'/%3E%3Cpath d='M16 18h32M16 32h32M16 46h32M20 14v36M32 14v36M44 14v36' stroke='%23ffd84d' stroke-width='3' opacity='.4'/%3E%3Ccircle cx='32' cy='32' r='9' fill='%23ffd84d'/%3E%3C/svg%3E">
+<style>
+:root{--bg:#0d0b10;--card:#19131d;--card2:#211824;--text:#fff9ff;--muted:#b9aebe;--yellow:#ffd84d;--pink:#ff8fbd;--cyan:#7addf0;--green:#8ce39b;--orange:#ffad65;--line:#49384d}
+*{box-sizing:border-box} html{background:var(--bg)}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Noto Sans TC",sans-serif;background:radial-gradient(circle at 50% -10%,#3a2038 0,#171019 36%,#0d0b10 76%);color:var(--text);min-height:100vh}
+.wrap{max-width:850px;margin:auto;padding:22px 15px 60px}.brand{color:var(--yellow);font-weight:900;font-size:12px;letter-spacing:.18em}
+h1{font-size:30px;margin:7px 0 5px;line-height:1.05}.lead{color:var(--muted);font-size:14px;line-height:1.55;margin:0 0 18px}
+.panel{background:rgba(25,19,29,.96);border:1px solid #382b3d;border-radius:22px;padding:16px;margin:0 0 15px;box-shadow:0 18px 55px #0007}
+.field{margin-bottom:12px}label{display:block;color:var(--muted);font-size:13px;margin:0 0 7px}
+input{width:100%;padding:14px 15px;border-radius:14px;border:1px solid var(--line);background:#0e0b11;color:white;font-size:17px;outline:none}
+input:focus{border-color:var(--yellow);box-shadow:0 0 0 3px #ffd84d1f}
+.actions{display:grid;grid-template-columns:1fr;gap:9px}
+button{border:0;border-radius:14px;padding:14px 16px;font-weight:850;font-size:16px;cursor:pointer}
+.primary{background:var(--yellow);color:#251d00}.secondary{background:#2a202e;color:white;border:1px solid #4b3b52}
+.err{color:#ff9da6;font-size:13px;margin-top:10px}.hidden{display:none!important}
+.headline{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.who{color:var(--muted);font-size:13px}.date{font-size:25px;font-weight:900;margin:3px 0 13px}
+.map{background:linear-gradient(180deg,#211723,#130f16);border:1px solid #3e3044;border-radius:20px;padding:16px 10px;overflow:hidden}
+.direction{display:flex;justify-content:space-between;color:var(--yellow);font-size:12px;font-weight:800;margin:0 6px 12px}
+.row{display:flex;align-items:center;justify-content:center}.r1{gap:14px}.r2{gap:58px;margin-top:10px}.r3{margin-top:10px}.r4{gap:66px;margin-top:10px}.r5{gap:8px;margin-top:13px;flex-wrap:wrap}
+.node{min-width:43px;height:43px;border:1px solid #503d56;border-radius:11px;background:#0e0b11;display:flex;align-items:center;justify-content:center;font-size:23px;font-weight:900;color:var(--yellow)}
+.node.small{min-width:37px;height:37px;font-size:20px}.pink{color:var(--pink)}.cyan{color:var(--cyan)}.green{color:var(--green)}.divider{width:1px;height:38px;background:#5a475f;margin:0 5px}
+.section-title{font-size:17px;font-weight:900;margin:19px 0 10px}.cards{display:grid;gap:10px}
+.card{border:1px solid #3a2e3e;background:var(--card2);border-radius:16px;padding:13px}.card-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.label{font-size:13px;color:var(--muted)}.number{font-size:26px;font-weight:950;letter-spacing:.05em;color:var(--yellow)}
+.mtitle{font-weight:850;font-size:15px;margin-top:7px}.meaning{font-size:13px;color:#e2d9e5;line-height:1.58;margin-top:3px}
+.stage-grid{display:grid;gap:10px}.stage-card{border:1px solid #3a2e3e;background:linear-gradient(145deg,#211824,#17121b);border-radius:16px;padding:14px}.stage-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:8px}.stage-name{font-size:17px;font-weight:900;color:var(--yellow)}.stage-range{font-size:12px;color:var(--muted)}.stage-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid #3a2e3e}.stage-label{font-size:13px;color:#e2d9e5}.stage-number{font-size:21px;font-weight:950;color:var(--yellow);letter-spacing:.05em}
+
+/* Wuxing Table Styling */
+.wuxing-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:8px}
+.wuxing-table{width:100%;border-collapse:collapse;text-align:center;font-size:14px;background:var(--card2);border-radius:16px;overflow:hidden;border:1px solid #3a2e3e}
+.wuxing-table th, .wuxing-table td{padding:10px 6px;border:1px solid #3a2e3e}
+.wuxing-table th{background:#2a1f2e;color:var(--muted);font-weight:700}
+.wuxing-table td.val{font-size:20px;font-weight:900;color:var(--yellow)}
+.wuxing-table td.base{color:var(--muted);font-size:13px}
+
+.footer-note{font-size:11.5px;line-height:1.55;color:#9e90a4;margin-top:14px}.pill{display:inline-block;border:1px solid #514056;background:#211923;border-radius:99px;padding:4px 8px;color:#cfc2d3;font-size:11px}
+.image-modal{position:fixed;inset:0;z-index:20;background:#09070bcc;display:flex;align-items:center;justify-content:center;padding:18px}.image-sheet{width:min(100%,700px);max-height:94vh;overflow:auto;background:#19131d;border:1px solid #49384d;border-radius:20px;padding:14px}.image-sheet img{display:block;width:100%;height:auto;border-radius:12px;background:#171019}.image-help{color:#e2d9e5;font-size:14px;line-height:1.5;margin:10px 2px}.image-sheet .actions{grid-template-columns:1fr 1fr}
+@media(min-width:650px){.actions{grid-template-columns:1fr auto}.secondary{min-width:150px}.cards{grid-template-columns:1fr 1fr}.stage-grid{grid-template-columns:repeat(3,1fr)}.r1{gap:24px}.r2{gap:75px}.r4{gap:85px}}
+@media print{body{background:#fff;color:#111}.wrap{max-width:none;padding:0}.panel{box-shadow:none;border:1px solid #bbb;background:#fff}.map,.card,.wuxing-table{background:#fff;border-color:#ccc}.meaning,.label,.who,.lead,.footer-note{color:#333}.secondary,.primary,.input-panel{display:none}.node{background:#fff;border-color:#bbb;color:#111}.direction,.number,.brand,.wuxing-table td.val{color:#111}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<div class="brand">NUMBER MAP · OFFLINE TOOL</div>
+<h1>聯合數字・生命地圖</h1>
+<p class="lead">輸入姓名及出生日期，自動生成 13 組聯合數字及《數字人生GPS》對應重點。</p>
+
+<section class="panel input-panel">
+  <div class="field"><label for="name">姓名 Name</label><input id="name" type="text" placeholder="輸入姓名" autocomplete="name"></div>
+  <div class="field"><label for="dob">出生日期 Date of Birth</label><input id="dob" type="text" inputmode="numeric" autocomplete="bday" placeholder="DD/MM/YYYY" maxlength="10" aria-describedby="dobHint"><div id="dobHint" class="who" style="margin-top:6px">格式：日／月／年，例如 01/01/1980</div></div>
+  <div class="actions">
+    <button class="primary" id="go">生成生命地圖</button>
+    <button class="secondary" id="reset" type="button">重設</button>
+  </div>
+  <div id="err" class="err hidden"></div>
+</section>
+
+<section id="result" class="panel hidden">
+  <div class="headline"><div><div class="who" id="outName"></div><div class="date" id="outDob"></div><div class="who" id="outAge"></div></div><span class="pill">因 + 過程 = 結果</span></div>
+
+  <div class="map">
+    <div class="direction"><span>← 事業</span><span>感情／婚姻 →</span></div>
+    <div class="row r1"><div class="node" id="A"></div><div class="node" id="B"></div><div class="divider"></div><div class="node" id="C"></div><div class="node" id="D"></div></div>
+    <div class="row r2"><div class="node" id="E"></div><div class="node" id="F"></div></div>
+    <div class="row r3"><div class="node cyan" id="G"></div></div>
+    <div class="row r4"><div class="node pink" id="P"></div><div class="node green" id="Q"></div></div>
+    <div class="row r5">
+      <div class="node small pink" id="H"></div><div class="node small pink" id="M"></div><div class="node small pink" id="L"></div>
+      <div class="node small cyan" id="R"></div>
+      <div class="node small green" id="I"></div><div class="node small green" id="K"></div><div class="node small green" id="J"></div>
+    </div>
+  </div>
+
+  <div class="section-title">人生黃金20年・三階段</div>
+  <div id="stages" class="stage-grid"></div>
+
+  <div class="section-title">五行分析</div>
+  <div id="wuxingContainer" class="wuxing-table-wrap"></div>
+
+  <div class="section-title">13 組聯合數字</div>
+  <div id="cards" class="cards"></div>
+  <div class="actions" style="margin-top:13px">
+    <button class="secondary" id="saveImage" type="button">儲存圖片到相簿</button>
+  </div>
+  <div class="footer-note">解讀文字按你提供的《2026FEB.SENDOUT聯合數字.數字人生GPS》整理成精簡版，保留教材的框架與術語。這是數字命理／自我反思工具，並非科學、醫療、財務或其他專業評估。</div>
+</section>
+</main>
+
+<div id="imageModal" class="image-modal hidden" role="dialog" aria-modal="true" aria-label="生命地圖圖片">
+  <div class="image-sheet">
+    <img id="resultImagePreview" alt="聯合數字生命地圖結果">
+    <div class="image-help">在 iPhone／iPad 可點「分享／儲存」，再選「儲存影像」。如未有此選項，請長按上方圖片並選擇儲存到相片。</div>
+    <div class="actions"><button class="primary" id="shareImage" type="button">分享／儲存</button><button class="secondary" id="closeImage" type="button">關閉</button></div>
+  </div>
+</div>
+
+<script>
+const MEANINGS = {
+  "112": {"title": "口才／協調", "text": "高能量：自信、善溝通及協調資源，適合業務或中間人角色。低能量：自我較強，又容易猶豫不決。"},
+  "123": {"title": "演說／行動", "text": "主動、自信、表達力及感染力強，能說能演；適合銷售、講師、市場開發。低能量時容易急躁、心直口快或三分鐘熱度。"},
+  "213": {"title": "演說／行動", "text": "主動、自信、表達力及感染力強，能說能演；適合銷售、講師、市場開發。低能量時容易急躁、心直口快或三分鐘熱度。"},
+  "134": {"title": "好員工／策劃", "text": "做事勤快積極，會策劃、做事穩妥，本性較善良感性。較需要鼓勵與認可，低能量時容易委屈或抱怨。"},
+  "314": {"title": "好員工／策劃", "text": "做事勤快積極，會策劃、做事穩妥，本性較善良感性。較需要鼓勵與認可，低能量時容易委屈或抱怨。"},
+  "145": {"title": "事與願違／內耗", "text": "高能量：有自信、懂策劃並能堅持目標。低能量：求穩與突破互相拉扯，容易焦慮內耗、轉換跑道或半途而廢。"},
+  "415": {"title": "事與願違／內耗", "text": "高能量：有自信、懂策劃並能堅持目標。低能量：求穩與突破互相拉扯，容易焦慮內耗、轉換跑道或半途而廢。"},
+  "156": {"title": "外地財富", "text": "適合離開熟悉環境、跨地域或用互聯網拓展；高能量時有領導力、方向感與智慧。宜多見世界、見高人。"},
+  "516": {"title": "外地財富", "text": "適合離開熟悉環境、跨地域或用互聯網拓展；高能量時有領導力、方向感與智慧。宜多見世界、見高人。"},
+  "167": {"title": "白手興家／從頭再來", "text": "聰明悟性高、直覺強、解決問題能力好；懂得用智慧吸引貴人與團隊。財運可以很好，但也較豪爽，宜學理財。"},
+  "617": {"title": "白手興家／從頭再來", "text": "聰明悟性高、直覺強、解決問題能力好；懂得用智慧吸引貴人與團隊。財運可以很好，但也較豪爽，宜學理財。"},
+  "178": {"title": "全球財富／責任", "text": "有領導力、分析洞察力及商業嗅覺，適合創業、高管、跨界或海外拓展。低能量時易替熟人扛太多責任，要學會拒絕。"},
+  "718": {"title": "全球財富／責任", "text": "有領導力、分析洞察力及商業嗅覺，適合創業、高管、跨界或海外拓展。低能量時易替熟人扛太多責任，要學會拒絕。"},
+  "189": {"title": "親力親為", "text": "責任感重、執着認真、有毅力，習慣自己扛到成功。容易高要求、高標準；要學懂放權、借力及減壓。"},
+  "819": {"title": "親力親為", "text": "責任感重、執着認真、有毅力，習慣自己扛到成功。容易高要求、高標準；要學懂放權、借力及減壓。"},
+  "191": {"title": "Me Time／孤獨領導者", "text": "主見強、獨立、能獨當一面；容易享受獨處。低能量時過度獨立、自負或少溝通，形成孤獨感。"},
+  "911": {"title": "Me Time／孤獨領導者", "text": "主見強、獨立、能獨當一面；容易享受獨處。低能量時過度獨立、自負或少溝通，形成孤獨感。"},
+  "224": {"title": "談判專家／糾結", "text": "溝通與合作能力強，能把策劃好的事情說清楚並推進。低能量時顧慮多、容易糾結或遲疑。"},
+  "235": {"title": "目標靠溝通與行動", "text": "行動與溝通配合，有目標感；狀態好時效率高。低能量時容易固執、情緒來得快去得快，做事較憑感覺。"},
+  "325": {"title": "目標靠溝通與行動", "text": "行動與溝通配合，有目標感；狀態好時效率高。低能量時容易固執、情緒來得快去得快，做事較憑感覺。"},
+  "246": {"title": "顧問式銷售", "text": "貼心、務實、忠誠、重細節，擅長理解需求並提供方案；較適合一對一、慢熱型銷售。低能量時容易討好別人、不好意思談錢。"},
+  "426": {"title": "顧問式銷售", "text": "貼心、務實、忠誠、重細節，擅長理解需求並提供方案；較適合一對一、慢熱型銷售。低能量時容易討好別人、不好意思談錢。"},
+  "257": {"title": "貴人／外形吸引", "text": "開口表達目標與夢想，容易吸引貴人協助。走正面時人緣與吸引力佳；要避免只靠感覺而缺乏落地。"},
+  "527": {"title": "貴人／外形吸引", "text": "開口表達目標與夢想，容易吸引貴人協助。走正面時人緣與吸引力佳；要避免只靠感覺而缺乏落地。"},
+  "268": {"title": "金融／事業", "text": "共情力強、表達有說服力，對金錢敏感；適合高端銷售、金融、保險、顧問、服務或創業。"},
+  "628": {"title": "金融／事業", "text": "共情力強、表達有說服力，對金錢敏感；適合高端銷售、金融、保險、顧問、服務或創業。"},
+  "279": {"title": "桃花／流量", "text": "容易吸引異性與關注，具流量及人緣能量。宜清楚自己的界線與方向，避免只追求外界認同。"},
+  "729": {"title": "桃花／流量", "text": "容易吸引異性與關注，具流量及人緣能量。宜清楚自己的界線與方向，避免只追求外界認同。"},
+  "292": {"title": "軍師／資源整合", "text": "溝通說服力強、有遠見，擅長資源整合、中介、平台及替別人找到破局方法。"},
+  "922": {"title": "軍師／資源整合", "text": "溝通說服力強、有遠見，擅長資源整合、中介、平台及替別人找到破局方法。"},
+  "336": {"title": "巨富／快錢", "text": "雙倍行動力，可快速創造財富；喜歡快節奏及可複製的商業模式。低能量時衝動、缺耐性，容易因情緒消費或破財。"},
+  "347": {"title": "萬人迷／帶團隊", "text": "行動快、策劃強、個人魅力高，容易吸引貴人並帶動團隊。低能量時情緒化、急躁或把貴人推開。"},
+  "437": {"title": "萬人迷／帶團隊", "text": "行動快、策劃強、個人魅力高，容易吸引貴人並帶動團隊。低能量時情緒化、急躁或把貴人推開。"},
+  "358": {"title": "公關／演說", "text": "業務銷售能力強，自帶生意頭腦、公關及演說天賦。宜把強表達力用在清晰目標與價值上。"},
+  "538": {"title": "公關／演說", "text": "業務銷售能力強，自帶生意頭腦、公關及演說天賦。宜把強表達力用在清晰目標與價值上。"},
+  "369": {"title": "投資／商機", "text": "行動快、智慧通透、具遠見，對商機敏銳，適合投資或資源整合。低能量時容易衝動消費、花錢快。"},
+  "639": {"title": "投資／商機", "text": "行動快、智慧通透、具遠見，對商機敏銳，適合投資或資源整合。低能量時容易衝動消費、花錢快。"},
+  "371": {"title": "才華／帶團隊", "text": "行動力、鑽研力與創造力兼備，才華橫溢、有領導力。低能量時可能疑心重，影響團隊與貴人。"},
+  "731": {"title": "才華／帶團隊", "text": "行動力、鑽研力與創造力兼備，才華橫溢、有領導力。低能量時可能疑心重，影響團隊與貴人。"},
+  "382": {"title": "陪伴式銷售", "text": "熱心、有擔當、願意幫人，表達有魅力且較溫和耐心。低能量時容易情緒或脾氣突然爆發。"},
+  "832": {"title": "陪伴式銷售", "text": "熱心、有擔當、願意幫人，表達有魅力且較溫和耐心。低能量時容易情緒或脾氣突然爆發。"},
+  "393": {"title": "專業技術／折騰", "text": "熱情主動、善找機會、表達力強，學習模仿能力高，具藝術、運動或銷售細胞。低能量時過度忙碌折騰。"},
+  "933": {"title": "專業技術／折騰", "text": "熱情主動、善找機會、表達力強，學習模仿能力高，具藝術、運動或銷售細胞。低能量時過度忙碌折騰。"},
+  "448": {"title": "思考／專家", "text": "策劃及思考能力強，想清楚後能承擔責任並取得成果。低能量時容易想太多、壓力大或睡不好。"},
+  "459": {"title": "企業家／心想事成", "text": "實力派夢想打造者，重方法與結果；適合創業、高管或績效導向工作。低能量時容易過度執着結果。"},
+  "549": {"title": "企業家／心想事成", "text": "實力派夢想打造者，重方法與結果；適合創業、高管或績效導向工作。低能量時容易過度執着結果。"},
+  "461": {"title": "學霸／智慧", "text": "學習力、分析力及價值輸出強，適合走專業、知識或管理路線；能憑能力累積第一桶金。"},
+  "641": {"title": "學霸／智慧", "text": "學習力、分析力及價值輸出強，適合走專業、知識或管理路線；能憑能力累積第一桶金。"},
+  "472": {"title": "平步青雲／務實", "text": "策劃後容易遇到伯樂或貴人，務實、重眼前可落地成果。低能量時可能過度着重短期利益。"},
+  "742": {"title": "平步青雲／務實", "text": "策劃後容易遇到伯樂或貴人，務實、重眼前可落地成果。低能量時可能過度着重短期利益。"},
+  "483": {"title": "專業／副手", "text": "適合走專業路線、考證書、成為領域專家；工作上想得周全，擅長把1做到100。生活上低能量時可能焦慮或丟三落四。"},
+  "843": {"title": "專業／副手", "text": "適合走專業路線、考證書、成為領域專家；工作上想得周全，擅長把1做到100。生活上低能量時可能焦慮或丟三落四。"},
+  "494": {"title": "學者／穩打穩扎", "text": "精細嚴謹、遠見強、擅長長期策劃與學習，做事穩打穩扎。低能量時容易保守、死板或想太多。"},
+  "944": {"title": "學者／穩打穩扎", "text": "精細嚴謹、遠見強、擅長長期策劃與學習，做事穩打穩扎。低能量時容易保守、死板或想太多。"},
+  "551": {"title": "一飛沖天／極端", "text": "成功爆發力強，方向一旦鎖定可快速突破。屬較極端能量，需避免固執、只顧結果或自我消耗。"},
+  "562": {"title": "守財／精明掌櫃", "text": "重價值與性價比，擅長守財及管理資源；對自己節省，對在乎的人可很大方。低能量時容易被誤解為計較。"},
+  "652": {"title": "守財／精明掌櫃", "text": "重價值與性價比，擅長守財及管理資源；對自己節省，對在乎的人可很大方。低能量時容易被誤解為計較。"},
+  "573": {"title": "高端貴人／資源人脈", "text": "容易結交更高圈層的人脈、權力及資源。宜善用人脈但保持判斷力，避免把來者都當成貴人。"},
+  "753": {"title": "高端貴人／資源人脈", "text": "容易結交更高圈層的人脈、權力及資源。宜善用人脈但保持判斷力，避免把來者都當成貴人。"},
+  "584": {"title": "落地執行／焦慮", "text": "確認方向後會負責任地策劃及落地；富創意、感染力強。低能量時容易過度規劃、擔心未來、遲遲不行動。"},
+  "854": {"title": "落地執行／焦慮", "text": "確認方向後會負責任地策劃及落地；富創意、感染力強。低能量時容易過度規劃、擔心未來、遲遲不行動。"},
+  "595": {"title": "大哥大／吸粉", "text": "方向感強、善抓機會並堅定前行；有領導力、講義氣、與人打交道能力強。低能量時膽大過頭、脾氣火爆或不按常理。"},
+  "955": {"title": "大哥大／吸粉", "text": "方向感強、善抓機會並堅定前行；有領導力、講義氣、與人打交道能力強。低能量時膽大過頭、脾氣火爆或不按常理。"},
+  "663": {"title": "錢追着跑／過路財神", "text": "智慧與賺錢能力強，現金流速度快。低能量時錢來得快也去得快，要做好資產配置與風險管理。"},
+  "674": {"title": "富二代／財富繼承", "text": "很聰明、幸運，懂得運用智慧與資源吸引貴人幫助完成計劃；強調借力，不必凡事自己硬做。"},
+  "764": {"title": "富二代／財富繼承", "text": "很聰明、幸運，懂得運用智慧與資源吸引貴人幫助完成計劃；強調借力，不必凡事自己硬做。"},
+  "685": {"title": "功德／事與願違", "text": "智慧、野心與趨勢感強，能為夢想創造突破。挑戰也較多；重點是正心正念、賺正財、控制情緒及多幫助別人。"},
+  "865": {"title": "功德／事與願違", "text": "智慧、野心與趨勢感強，能為夢想創造突破。挑戰也較多；重點是正心正念、賺正財、控制情緒及多幫助別人。"},
+  "696": {"title": "點石成金／機遇財", "text": "財富機會強，容易賺到一波機遇的錢，也能為身邊人創造價值。錢來得快亦可能去得快，要懂得鎖住成果。"},
+  "966": {"title": "點石成金／機遇財", "text": "財富機會強，容易賺到一波機遇的錢，也能為身邊人創造價值。錢來得快亦可能去得快，要懂得鎖住成果。"},
+  "775": {"title": "有恩必報／有仇必報", "text": "身邊支持者多、重情重義，對人非常投入。低能量時容易愛憎分明、脾氣重或把情緒帶進關係。"},
+  "786": {"title": "異性貴人／無條件支持", "text": "有吸引貴人的能力；貴人帶來的壓力若能承接，便能轉化成專業價值。要懂得彎腰低頭與承擔。"},
+  "876": {"title": "權威吸引貴人", "text": "透過展現權威或專業吸引貴人；低能量時可能把壓力及臉色給到貴人，反而影響支持。"},
+  "797": {"title": "左右逢源", "text": "人緣好、容易上有人拉下有人托，適合業務及人際工作。宜把人脈沉澱成專業與長期關係。"},
+  "977": {"title": "左右逢源", "text": "人緣好、容易上有人拉下有人托，適合業務及人際工作。宜把人脈沉澱成專業與長期關係。"},
+  "887": {"title": "能力強／內耗", "text": "責任心、領導力、號召力及應變力都強，很能幹。低能量時水火相沖、壓力及內耗較明顯。"},
+  "898": {"title": "大企業家／更大更好", "text": "企圖心與格局大，喜歡更大、更多、更好，宏觀思維強。要留意過度追求與壓力，保持身心平衡。"},
+  "988": {"title": "大企業家／更大更好", "text": "企圖心與格局大，喜歡更大、更多、更好，宏觀思維強。要留意過度追求與壓力，保持身心平衡。"},
+  "999": {"title": "極數／大好大壞", "text": "機會很多、可能大起大落。專一、扎根、全力以赴時容易成功；低能量時貪心、甚麼都想要，反而分散。"},
+  "281": {"title": "冠軍銷售", "text": "教材稱為「冠軍銷售號碼」：重點在讀心、理解對方需要及有效溝通，再以責任感推進結果。"},
+  "821": {"title": "冠軍銷售", "text": "教材稱為「冠軍銷售號碼」：重點在讀心、理解對方需要及有效溝通，再以責任感推進結果。"}
+};
+
+const $=id=>document.getElementById(id);
+function red(n){ n=Math.abs(parseInt(n,10)||0); while(n>9)n=String(n).split('').reduce((a,b)=>a+Number(b),0); return n; }
+function sdigits(s){ return red(String(s).split('').reduce((a,b)=>a+(Number(b)||0),0)); }
+
+function calc(dob){
+  const [y,m,d]=dob.split('-');
+  const A=sdigits(d), B=sdigits(m), C=sdigits(y.slice(0,2)), D=sdigits(y.slice(2));
+  const E=red(A+B), F=red(C+D), G=red(E+F);
+  const P=red(E+G), Q=red(F+G), R=red(P+Q);
+  const H=red(A+E), M=red(B+E), L=red(H+M);
+  const I=red(C+F), K=red(D+F), J=red(I+K);
+  return {A,B,C,D,E,F,G,P,Q,R,H,M,L,I,K,J};
+}
+
+// Dedicated Wuxing Analysis Function
+function calcWuxing(n){
+  const nodes = [n.A, n.B, n.C, n.D, n.E, n.F, n.G, n.P, n.Q, n.R, n.H, n.M, n.L, n.I, n.K, n.J];
+  const counts = { '金': 0, '水': 0, '火': 0, '木': 0, '土': 0 };
+  
+  nodes.forEach(v => {
+    if(v === 1 || v === 6) counts['金']++;
+    else if(v === 2 || v === 7) counts['水']++;
+    else if(v === 3 || v === 8) counts['火']++;
+    else if(v === 4 || v === 9) counts['木']++;
+    else if(v === 5) counts['土']++;
+  });
+
+  const getElement = v => {
+    if(v === 1 || v === 6) return '金';
+    if(v === 2 || v === 7) return '水';
+    if(v === 3 || v === 8) return '火';
+    if(v === 4 || v === 9) return '木';
+    return '土';
+  };
+
+  const selfElement = getElement(n.G);
+  const order = ['木', '火', '土', '金', '水'];
+  const selfIdx = order.indexOf(selfElement);
+  
+  const rotatedElements = [];
+  for(let i = 0; i < 5; i++){
+    rotatedElements.push(order[(selfIdx + i) % 5]);
+  }
+
+  const roleNames = ['自身', '子女 / 錢財', '事業 / 伴侶', '官鬼 / 疾病', '父母 / 貴人'];
+  const baseValues = [4, 3, 3, 3, 3];
+
+  return roleNames.map((role, idx) => {
+    const elem = rotatedElements[idx];
+    return {
+      role: role,
+      elem: elem,
+      count: counts[elem],
+      base: baseValues[idx]
+    };
+  });
+}
+
+const tri=(a,b,c)=>`${a}${b}${c}`;
+function doubleTri(value){return String(value).split('').map(function(d){return red(Number(d)*2)}).join('');}
+
+function rows(n){
+ return [
+  ['1) 父基因（事業）',tri(n.A,n.B,n.E)],
+  ['2) 母基因（婚姻）',tri(n.C,n.D,n.F)],
+  ['3) 主性格',tri(n.E,n.F,n.G)],
+  ['4) 人生過程',tri(n.E,n.G,n.P)],
+  ['5) 人生過程',tri(n.F,n.G,n.Q)],
+  ['6) 子女／下屬',tri(n.Q,n.P,n.R)],
+  ['7) 事業過程',tri(n.A,n.E,n.H)],
+  ['8) 事業過程',tri(n.B,n.E,n.M)],
+  ['9) 工作／朋友',tri(n.H,n.M,n.L)],
+  ['10) 婚姻過程',tri(n.C,n.F,n.I)],
+  ['11) 婚姻過程',tri(n.D,n.F,n.K)],
+  ['12) 晚年',tri(n.I,n.K,n.J)],
+  ['13) 隱藏號碼',doubleTri(tri(n.E,n.F,n.G))]
+ ];
+}
+
+function stageGroups(rs){
+ return [
+  {title:'早年',range:'21–40歲',items:[rs[0],rs[6],rs[7],rs[8]]},
+  {title:'中年',range:'41–60歲',items:[rs[2],rs[3],rs[4],rs[5]]},
+  {title:'晚年／婚姻',range:'61歲後・家庭／健康',items:[rs[1],rs[9],rs[10],rs[11]]}
+ ];
+}
+
+function fmtDate(v){const [y,m,d]=v.split('-');return `${d}/${m}/${y}`;}
+function parseDob(v){
+ const match=v.trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/); if(!match)return null;
+ const d=Number(match[1]),m=Number(match[2]),y=Number(match[3]),date=new Date(y,m-1,d),today=new Date();
+ if(date.getFullYear()!==y||date.getMonth()!==m-1||date.getDate()!==d||date>today)return null;
+ return `${String(y).padStart(4,'0')}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+}
+
+function currentAge(v){
+ const [y,m,d]=v.split('-').map(Number), today=new Date();
+ let age=today.getFullYear()-y;
+ if(today.getMonth()+1<m||(today.getMonth()+1===m&&today.getDate()<d))age--;
+ return age;
+}
+
+function generate(){
+ const name=$('name').value.trim(), dob=parseDob($('dob').value), err=$('err');
+ if(!name){err.textContent='請輸入姓名。';err.classList.remove('hidden');return;}
+ if(!dob){err.textContent='請以 DD/MM/YYYY 格式輸入有效的出生日期。';err.classList.remove('hidden');return;}
+ err.classList.add('hidden');
+ const n=calc(dob);
+ Object.keys(n).forEach(k=>{if($(k))$(k).textContent=n[k]});
+ $('outName').textContent=name; $('outDob').textContent=fmtDate(dob); $('outAge').textContent=`現年 ${currentAge(dob)} 歲`;
+ 
+ const rs=rows(n);
+ $('stages').innerHTML=stageGroups(rs).map(function(stage){return '<div class="stage-card"><div class="stage-head"><div class="stage-name">'+stage.title+'</div><div class="stage-range">'+stage.range+'</div></div>'+stage.items.map(function(item){return '<div class="stage-row"><div class="stage-label">'+item[0]+'</div><div class="stage-number">'+item[1]+'</div></div>'}).join('')+'</div>'}).join('');
+ 
+ // Render Wuxing Section
+ const wxData = calcWuxing(n);
+ let wxHtml = '<table class="wuxing-table"><thead><tr>';
+ wxHtml += '<th>類別</th>' + wxData.map(d => `<th>${d.role}</th>`).join('');
+ wxHtml += '</tr><tr><th>五行</th>' + wxData.map(d => `<th>${d.elem}</th>`).join('');
+ wxHtml += '</tr></thead><tbody><tr><td>數值</td>' + wxData.map(d => `<td class="val">${d.count}</td>`).join('');
+ wxHtml += '</tr><tr><td>平衡值</td>' + wxData.map(d => `<td class="base">${d.base}</td>`).join('');
+ wxHtml += '</tr></tbody></table>';
+ $('wuxingContainer').innerHTML = wxHtml;
+
+ $('cards').innerHTML=rs.map(([label,num])=>{
+   const x=MEANINGS[num]||{title:'未載入解讀',text:'此組合未能在目前的精簡資料庫中配對。'};
+   return `<div class="card"><div class="card-top"><div class="label">${label}</div><div class="number">${num}</div></div><div class="mtitle">${x.title}</div><div class="meaning">${x.text}</div></div>`;
+ }).join('');
+ $('result').classList.remove('hidden');
+ window.__last={name,dob,rows:rs,n:n};
+ $('result').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+$('go').addEventListener('click',generate);
+$('reset').addEventListener('click',function(){
+ $('name').value='';$('dob').value='';$('err').classList.add('hidden');$('err').textContent='';$('result').classList.add('hidden');$('stages').innerHTML='';$('wuxingContainer').innerHTML='';$('cards').innerHTML='';window.__last=null;
+ if(!$('imageModal').classList.contains('hidden'))$('closeImage').click();
+ window.scrollTo({top:0,behavior:'smooth'});$('name').focus();
+});
+
+async function resultImage(){
+ const W=1080,pad=56,inner=W-pad*2,n=window.__last.n,rs=rows(n),wxData=calcWuxing(n);
+ const measure=document.createElement('canvas').getContext('2d'),font='"PingFang TC","Noto Sans TC",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif';
+ function lines(value,max,fontSize,weight){measure.font=(weight||'400')+' '+fontSize+'px '+font;const out=[];let line='';for(const ch of value){if(measure.measureText(line+ch).width>max&&line){out.push(line);line=ch}else line+=ch}if(line)out.push(line);return out}
+ const cards=rs.map(function(row){const label=row[0],num=row[1],x=MEANINGS[num]||{title:'未載入解讀',text:'此組合未能配對。'},body=lines(x.text,inner-64,27);return{label:label,num:num,x:x,body:body,h:152+body.length*40}}),groups=stageGroups(rs);
+ 
+ // Adjusted total canvas height calculation including Wuxing section (240px)
+ const H=56+50+75+42+36+630+930+240+70+cards.reduce(function(sum,c){return sum+c.h+18},0)+80;
+ const canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;const ctx=canvas.getContext('2d');
+ ctx.fillStyle='#0d0b10';ctx.fillRect(0,0,W,H);ctx.textBaseline='top';
+ const text=function(value,x,y,size,color,weight,align){ctx.font=(weight||'400')+' '+size+'px '+font;ctx.fillStyle=color||'#fff9ff';ctx.textAlign=align||'left';ctx.fillText(value,x,y)};
+ const box=function(x,y,w,h,r,fill,stroke){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.stroke()}};
+ 
+ let y=56;text('聯合數字・生命地圖',pad,y,42,'#ffd84d','800');y+=65;text(window.__last.name,pad,y,31,'#b9aebe','600');text(fmtDate(window.__last.dob),W-pad,y,34,'#fff9ff','800','right');y+=48;text('現年 '+currentAge(window.__last.dob)+' 歲',pad,y,27,'#b9aebe','500');y+=58;
+ box(pad,y,inner,600,26,'#19131d','#49384d');text('← 事業',pad+30,y+28,24,'#ffd84d','700');text('感情／婚姻 →',W-pad-30,y+28,24,'#ffd84d','700','right');
+ const node=function(key,x,ny,color,small){const s=small?66:76;box(x-s/2,ny-s/2,s,s,16,'#0e0b11','#503d56');text(String(n[key]),x,ny-(small?18:21),small?36:42,color||'#ffd84d','800','center')};
+ const cy=y+145;node('A',315,cy);node('B',425,cy);node('C',655,cy);node('D',765,cy);node('E',410,cy+100);node('F',670,cy+100);node('G',540,cy+195,'#7addf0');node('P',430,cy+290,'#ff8fbd');node('Q',650,cy+290,'#8ce39b');
+ [['H',250,'#ff8fbd'],['M',330,'#ff8fbd'],['L',410,'#ff8fbd'],['R',540,'#7addf0'],['I',670,'#8ce39b'],['K',750,'#8ce39b'],['J',830,'#8ce39b']].forEach(function(a){node(a[0],a[1],cy+380,a[2],true)});
+ y+=650;text('人生黃金20年・三階段',pad,y,34,'#fff9ff','800');y+=55;
+ for(const group of groups){box(pad,y,inner,272,20,'#211824','#3a2e3e');text(group.title,pad+30,y+22,31,'#ffd84d','800');text(group.range,W-pad-30,y+27,23,'#b9aebe','500','right');let gy=y+74;for(const item of group.items){text(item[0],pad+30,gy,25,'#e2d9e5','500');text(item[1],W-pad-30,gy-3,31,'#ffd84d','800','right');gy+=45}y+=290}
+ 
+ // Render Wuxing Canvas Section
+ text('五行分析',pad,y,34,'#fff9ff','800');y+=50;
+ box(pad,y,inner,170,20,'#211824','#3a2e3e');
+ const colW = inner / 6;
+ const headers = ['類別', ...wxData.map(d=>d.role)];
+ const elems = ['五行', ...wxData.map(d=>d.elem)];
+ const vals = ['數值', ...wxData.map(d=>d.count)];
+ const bases = ['平衡值', ...wxData.map(d=>d.base)];
+ 
+ for(let c=0; c<6; c++){
+   const cx = pad + colW * c + colW/2;
+   text(headers[c], cx, y+15, 20, '#b9aebe', '700', 'center');
+   text(elems[c], cx, y+48, 20, '#b9aebe', '700', 'center');
+   text(String(vals[c]), cx, y+85, 26, c===0?'#fff9ff':'#ffd84d', '900', 'center');
+   text(String(bases[c]), cx, y+125, 18, '#b9aebe', '400', 'center');
+ }
+ y+=210;
+
+ text('13 組聯合數字',pad,y,34,'#fff9ff','800');y+=55;
+ for(const c of cards){box(pad,y,inner,c.h,20,'#211824','#3a2e3e');text(c.label,pad+30,y+25,24,'#b9aebe','500');text(c.num,W-pad-30,y+18,44,'#ffd84d','800','right');text(c.x.title,pad+30,y+75,29,'#fff9ff','800');let ly=y+116;for(const line of c.body){text(line,pad+30,ly,27,'#e2d9e5','400');ly+=40}y+=c.h+18}
+ text('數字命理／自我反思工具，並非科學、醫療、財務或其他專業評估。',pad,y+8,21,'#9e90a4','400');
+ return await new Promise(function(resolve){canvas.toBlob(resolve,'image/png',1)});
+}
+
+$('closeImage').addEventListener('click',function(){$('imageModal').classList.add('hidden');if(window.__imageUrl)URL.revokeObjectURL(window.__imageUrl);window.__imageUrl=null});
+$('imageModal').addEventListener('click',function(e){if(e.target===$('imageModal'))$('closeImage').click()});
+$('shareImage').addEventListener('click',async function(){if(!window.__imageBlob)return;const file=new File([window.__imageBlob],'生命地圖-'+window.__last.name+'.png',{type:'image/png'});try{if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]}))await navigator.share({files:[file],title:'聯合數字・生命地圖'});else{const a=document.createElement('a');a.href=window.__imageUrl;a.download=file.name;a.click()}}catch(e){if(e.name!=='AbortError')alert('請長按圖片並選擇儲存到相片。')}});
+$('saveImage').addEventListener('click',async()=>{
+ const button=$('saveImage'), original=button.textContent; button.disabled=true; button.textContent='正在製作圖片…';
+ try{const blob=await resultImage();if(!blob)throw new Error('image');if(window.__imageUrl)URL.revokeObjectURL(window.__imageUrl);window.__imageBlob=blob;window.__imageUrl=URL.createObjectURL(blob);$('resultImagePreview').src=window.__imageUrl;$('imageModal').classList.remove('hidden');}
+ catch(e){alert('未能建立圖片，請使用裝置的截圖功能。');}
+ finally{button.disabled=false;button.textContent=original;}
+});
+
+$('dob').addEventListener('input',e=>{const digits=e.target.value.replace(/\D/g,'').slice(0,8);e.target.value=digits.length>4?`${digits.slice(0,2)}/${digits.slice(2,4)}/${digits.slice(4)}`:digits.length>2?`${digits.slice(0,2)}/${digits.slice(2)}`:digits;});
+['name','dob'].forEach(id=>$(id).addEventListener('keydown',e=>{if(e.key==='Enter')generate()}));
+</script>
+</body>
+</html>
