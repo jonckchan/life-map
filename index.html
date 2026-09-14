@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>數字人生 GPS / 聯合數字</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --bg-color: #f4f6f7;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #e0e0e0;
+            --flag-color: #e74c3c;
+            --flag-bg: #fdf2e9;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 12px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 10px 0;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 1.6rem;
+            margin-bottom: 4px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 1px solid var(--border-color);
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 6px;
+            margin-bottom: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-reset {
+            background-color: #95a5a6;
+            margin-top: 8px;
+        }
+
+        .btn-reset:hover {
+            background-color: #7f8c8d;
+        }
+
+        /* Map Diagrams */
+        .map-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+            text-align: center;
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+        }
+
+        .map-node {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 6px 2px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .map-node span {
+            display: block;
+            font-size: 0.7rem;
+            color: #666;
+            font-weight: normal;
+        }
+
+        /* Number Lists */
+        .combo-list {
+            list-style: none;
+        }
+
+        .combo-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .combo-item:last-child {
+            border-bottom: none;
+        }
+
+        .combo-title {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .combo-num {
+            display: inline-block;
+            background: #eef2f7;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: #2980b9;
+            margin-left: 6px;
+        }
+
+        .combo-desc {
+            font-size: 0.9rem;
+            color: #555;
+            margin-top: 4px;
+        }
+
+        /* Wuxing Table */
+        .wuxing-table-container {
+            overflow-x: auto;
+        }
+
+        .wuxing-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+            font-size: 0.95rem;
+        }
+
+        .wuxing-table th, .wuxing-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .wuxing-table th {
+            background-color: #f2f4f8;
+            color: #333;
+        }
+
+        .flag-box {
+            background-color: var(--flag-bg);
+            border-left: 4px solid var(--flag-color);
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .flag-item {
+            color: var(--flag-color);
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .flag-item:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Debug Section */
+        details {
+            margin-top: 10px;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 8px;
+        }
+
+        summary {
+            font-weight: bold;
+            cursor: pointer;
+            color: #555;
+        }
+
+        .debug-content {
+            font-family: monospace;
+            font-size: 0.85rem;
+            white-space: pre-wrap;
+            margin-top: 8px;
+            background: #fff;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+
+        .error-alert {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            border: 1px solid #f5c6cb;
+            display: none;
+        }
+
+        .badge-info {
+            background: #e3f2fd;
+            color: #0d47a1;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>數字人生 GPS / 聯合數字</h1>
+    </header>
+
+    <div id="debug-error-alert" class="error-alert"></div>
+
+    <!-- 1. Input Section -->
+    <div class="card">
+        <div class="section-title">輸入資料</div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="input-name">姓名</label>
+                <input type="text" id="input-name" placeholder="請輸入姓名">
+            </div>
+            <div class="form-group">
+                <label for="input-dob">出生日期 (DD/MM/YYYY)</label>
+                <input type="text" id="input-dob" placeholder="例如: 30/06/1984">
+            </div>
+        </div>
+        <button id="btn-calculate" onclick="calculateAll()">開始分析</button>
+        <button class="btn-reset" onclick="resetForm()">重置</button>
+    </div>
+
+    <div id="results-area" style="display: none;">
+
+        <!-- 2. Basic Info -->
+        <div class="card">
+            <div class="section-title">基本資料</div>
+            <p><strong>姓名：</strong> <span id="res-name"></span></p>
+            <p><strong>出生日期：</strong> <span id="res-dob"></span></p>
+            <p><strong>現時年齡：</strong> <span id="res-age"></span> 歲</p>
+        </div>
+
+        <!-- 3. Original Life Map -->
+        <div class="card">
+            <div class="section-title">原命生命地圖</div>
+            <div class="map-grid" id="original-map">
+                <!-- Javascript populated -->
+            </div>
+        </div>
+
+        <!-- 4. Original 12+1 Combined Numbers -->
+        <div class="card">
+            <div class="section-title">原命 12+1 聯合數字</div>
+            <ul class="combo-list" id="original-combos">
+                <!-- Javascript populated -->
+            </ul>
+        </div>
+
+        <!-- 5. Three Stages -->
+        <div class="card">
+            <div class="section-title">三階段分析</div>
+            <div id="three-stages-content">
+                <!-- Javascript populated -->
+            </div>
+        </div>
+
+        <!-- 6. Original Wuxing -->
+        <div class="card">
+            <div class="section-title">原命五行</div>
+            <p><strong>自身五行 (基於原命 G Node)：</strong> <span id="orig-self-wuxing" style="font-weight:bold; color:var(--accent-color);"></span></p>
+            <div class="wuxing-table-container">
+                <table class="wuxing-table">
+                    <thead>
+                        <tr>
+                            <th>範疇</th>
+                            <th>五行</th>
+                            <th>關係</th>
+                            <th>實際值</th>
+                            <th>平衡值</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orig-wuxing-tbody">
+                        <!-- Javascript populated -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="orig-wuxing-flags" class="flag-box" style="display:none;"></div>
+        </div>
+
+        <!-- 7. Annual Analysis -->
+        <div class="card">
+            <div class="section-title">
+                <span>流年分析</span>
+                <select id="select-liunian-year" onchange="updateLiunianYear()" style="width: auto; padding: 4px 8px;">
+                    <!-- Javascript populated -->
+                </select>
+            </div>
+            <div class="badge-info" id="liunian-period-text"></div>
+            <p><strong><span id="liunian-year-val"></span> 流年數：</strong> <span id="liunian-g-val" style="font-size:1.2rem; font-weight:bold; color:var(--accent-color);"></span></p>
+
+            <h4 style="margin: 12px 0 6px 0;">流年生命地圖</h4>
+            <div class="map-grid" id="liunian-map">
+                <!-- Javascript populated -->
+            </div>
+
+            <h4 style="margin: 12px 0 6px 0;">流年 12 聯合數字</h4>
+            <ul class="combo-list" id="liunian-combos">
+                <!-- Javascript populated -->
+            </ul>
+
+            <h4 style="margin: 12px 0 6px 0;">流年五行</h4>
+            <p style="font-size: 0.85rem; color: #666; margin-bottom: 6px;">注：流年五行結構仍以原命自身五行爲基準。</p>
+            <div class="wuxing-table-container">
+                <table class="wuxing-table">
+                    <thead>
+                        <tr>
+                            <th>範疇</th>
+                            <th>五行</th>
+                            <th>關係</th>
+                            <th>實際值</th>
+                            <th>平衡值</th>
+                        </tr>
+                    </thead>
+                    <tbody id="liunian-wuxing-tbody">
+                        <!-- Javascript populated -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="liunian-wuxing-flags" class="flag-box" style="display:none;"></div>
+
+            <div id="liunian-teaching-tips" class="flag-box" style="display:none; border-left-color: #f39c12; background-color: #fef9e7;"></div>
+        </div>
+
+        <!-- 8. Debug / Validation Details -->
+        <div class="card">
+            <details>
+                <summary>查看計算明細</summary>
+                <div class="debug-content" id="debug-text"></div>
+            </details>
+        </div>
+
+    </div>
+
+    <script>
+        // --- Core Rules & Functions ---
+
+        function reduceNum(n) {
+            let s = n.toString();
+            while (s.length > 1) {
+                let sum = 0;
+                for (let i = 0; i < s.length; i++) {
+                    sum += parseInt(s[i], 10);
+                }
+                s = sum.toString();
+            }
+            return parseInt(s, 10);
+        }
+
+        function sumDigitsAndReduce(str) {
+            let sum = 0;
+            for (let i = 0; i < str.length; i++) {
+                if (str[i] >= '0' && str[i] <= '9') {
+                    sum += parseInt(str[i], 10);
+                }
+            }
+            return reduceNum(sum);
+        }
+
+        // Exact mapping: 金=1,6; 水=2,7; 火=3,8; 木=4,9; 土=5
+        const WUXING_ELEMENTS = {
+            1: "金", 6: "金",
+            2: "水", 7: "水",
+            3: "火", 8: "火",
+            4: "木", 9: "木",
+            5: "土"
+        };
+
+        const WUXING_CYCLES = {
+            "木": { "生": "火", "克": "土" },
+            "火": { "生": "土", "克": "金" },
+            "土": { "生": "金", "克": "水" },
+            "金": { "生": "水", "克": "木" },
+            "水": { "生": "木", "克": "火" }
+        };
+
+        const WUXING_REVERSE_CYCLES = {
+            "木": { "生我": "水", "克我": "金" },
+            "火": { "生我": "木", "克我": "水" },
+            "土": { "生我": "火", "克我": "木" },
+            "金": { "生我": "土", "克我": "火" },
+            "水": { "生我": "金", "克我": "土" }
+        };
+
+        function getSelfWuxing(nodeG) {
+            return WUXING_ELEMENTS[nodeG];
+        }
+
+        function buildWuxingCategories(selfElement) {
+            const result = [
+                { category: "自身", relation: "我", target: 4, element: selfElement },
+                { category: "子女／錢財", relation: "我生", target: 3, element: WUXING_CYCLES[selfElement]["生"] },
+                { category: "事業／伴侶", relation: "我克", target: 3, element: WUXING_CYCLES[selfElement]["克"] },
+                { category: "官鬼／疾病", relation: "克我", target: 3, element: WUXING_REVERSE_CYCLES[selfElement]["克我"] },
+                { category: "父母／貴人", relation: "生我", target: 3, element: WUXING_REVERSE_CYCLES[selfElement]["生我"] }
+            ];
+            return result;
+        }
+
+        function compute16Nodes(A, B, C, D) {
+            const E = reduceNum(A + B);
+            const F = reduceNum(C + D);
+            const G = reduceNum(E + F);
+
+            const P = reduceNum(E + G);
+            const Q = reduceNum(F + G);
+            const R = reduceNum(P + Q);
+
+            const H = reduceNum(A + E);
+            const M = reduceNum(B + E);
+            const L = reduceNum(H + M);
+
+            const I = reduceNum(C + F);
+            const K = reduceNum(D + F);
+            const J = reduceNum(I + K);
+
+            const nodes = { A, B, C, D, E, F, G, P, Q, R, H, M, L, I, K, J };
+            const nodeArray = [A, B, C, D, E, F, G, P, Q, R, H, M, L, I, K, J];
+
+            return { nodes, nodeArray };
+        }
+
+        function tallyWuxing(nodeArray) {
+            const digitCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0 };
+            nodeArray.forEach(val => {
+                digitCounts[val] = (digitCounts[val] || 0) + 1;
+            });
+
+            const elementCounts = {
+                "金": digitCounts[1] + digitCounts[6],
+                "水": digitCounts[2] + digitCounts[7],
+                "火": digitCounts[3] + digitCounts[8],
+                "木": digitCounts[4] + digitCounts[9],
+                "土": digitCounts[5]
+            };
+
+            return { digitCounts, elementCounts };
+        }
+
+        function compute12Combos(nodes) {
+            const { A, B, C, D, E, F, G, P, Q, R, H, M, L, I, K, J } = nodes;
+            return [
+                { id: 1, title: "父基因（事業）", val: `${A}${B}${E}` },
+                { id: 2, title: "母基因（婚姻）", val: `${C}${D}${F}` },
+                { id: 3, title: "主性格", val: `${E}${F}${G}` },
+                { id: 4, title: "人生過程", val: `${E}${G}${P}` },
+                { id: 5, title: "人生過程", val: `${F}${G}${Q}` },
+                { id: 6, title: "子女／下屬", val: `${Q}${P}${R}` },
+                { id: 7, title: "事業過程", val: `${A}${E}${H}` },
+                { id: 8, title: "事業過程", val: `${B}${E}${M}` },
+                { id: 9, title: "工作／朋友", val: `${H}${M}${L}` },
+                { id: 10, title: "婚姻過程", val: `${C}${F}${I}` },
+                { id: 11, title: "婚姻過程", val: `${D}${F}${K}` },
+                { id: 12, title: "晚年", val: `${I}${K}${J}` }
+            ];
+        }
+
+        function computeItem13(item3Val) {
+            const d1 = parseInt(item3Val[0], 10);
+            const d2 = parseInt(item3Val[1], 10);
+            const d3 = parseInt(item3Val[2], 10);
+
+            const r1 = reduceNum(d1 * 2);
+            const r2 = reduceNum(d2 * 2);
+            const r3 = reduceNum(d3 * 2);
+
+            return `${r1}${r2}${r3}`;
+        }
+
+        // --- Mock Database for 81 Combinations ---
+        function getExplanation(comboStr) {
+            // Representative dummy/stub explanations for database lookup
+            return `聯合數字 ${comboStr} 的特質分析說明。`;
+        }
+
+        // --- Application State ---
+        let globalState = {
+            dobDayStr: "",
+            dobMonthStr: "",
+            dobYearStr: "",
+            originalNodes: null,
+            originalSelfWuxing: "",
+            selectedLiunianYear: 2026
+        };
+
+        // --- Validation & Unit Tests ---
+        function runAutomatedTests() {
+            const testCases = [
+                {
+                    dob: "30/06/1984",
+                    liunianYear: 2026,
+                    expectedOrigG: 4,
+                    expectedOrigWuxing: { "木": 5, "火": 6, "土": 1, "金": 3, "水": 1 },
+                    expectedLiunianG: 1,
+                    expectedLiunianNodes: [3,6,2,8,9,1,1,1,2,3,3,6,9,3,9,3],
+                    expectedLiunianWuxing: { "金": 5, "水": 2, "火": 6, "木": 3, "土": 0 }
+                },
+                {
+                    dob: "04/11/1949",
+                    liunianYear: 2026,
+                    expectedOrigG: 2,
+                    expectedLiunianG: 7,
+                    expectedLiunianNodes: [4,2,2,8,6,1,7,4,8,3,1,8,9,3,9,3],
+                    expectedLiunianWuxing: { "金": 3, "水": 3, "火": 6, "木": 4, "土": 0 }
+                },
+                {
+                    dob: "01/09/1963",
+                    liunianYear: 2026,
+                    expectedLiunianNodes: [1,9,2,8,1,1,2,3,3,6,2,1,3,3,9,3],
+                    expectedLiunianWuxing: { "金": 5, "水": 3, "火": 6, "木": 2, "土": 0 }
+                }
+            ];
+
+            let errors = [];
+
+            testCases.forEach((tc, idx) => {
+                const parts = tc.dob.split('/');
+                const dayStr = parts[0];
+                const monthStr = parts[1];
+                const yearStr = parts[2];
+
+                // Original calculation
+                const A_orig = sumDigitsAndReduce(dayStr);
+                const B_orig = sumDigitsAndReduce(monthStr);
+                const C_orig = sumDigitsAndReduce(yearStr.substring(0, 2));
+                const D_orig = sumDigitsAndReduce(yearStr.substring(2, 4));
+                const orig = compute16Nodes(A_orig, B_orig, C_orig, D_orig);
+
+                if (tc.expectedOrigG && orig.nodes.G !== tc.expectedOrigG) {
+                    errors.push(`Test ${idx+1} (${tc.dob}) Orig G mismatch: got ${orig.nodes.G}, expected ${tc.expectedOrigG}`);
+                }
+
+                if (tc.expectedOrigWuxing) {
+                    const origW = tallyWuxing(orig.nodeArray).elementCounts;
+                    for (let el in tc.expectedOrigWuxing) {
+                        if (origW[el] !== tc.expectedOrigWuxing[el]) {
+                            errors.push(`Test ${idx+1} Orig Wuxing ${el} mismatch: got ${origW[el]}, expected ${tc.expectedOrigWuxing[el]}`);
+                        }
+                    }
+                }
+
+                // Liunian calculation (Order: Day -> Month -> Year)
+                const A_ln = sumDigitsAndReduce(dayStr);
+                const B_ln = sumDigitsAndReduce(monthStr);
+                const lYearStr = tc.liunianYear.toString();
+                const C_ln = sumDigitsAndReduce(lYearStr.substring(0, 2));
+                const D_ln = sumDigitsAndReduce(lYearStr.substring(2, 4));
+                const ln = compute16Nodes(A_ln, B_ln, C_ln, D_ln);
+
+                if (tc.expectedLiunianG && ln.nodes.G !== tc.expectedLiunianG) {
+                    errors.push(`Test ${idx+1} (${tc.dob}) Liunian G mismatch: got ${ln.nodes.G}, expected ${tc.expectedLiunianG}`);
+                }
+
+                if (tc.expectedLiunianNodes) {
+                    for (let i = 0; i < 16; i++) {
+                        if (ln.nodeArray[i] !== tc.expectedLiunianNodes[i]) {
+                            errors.push(`Test ${idx+1} Liunian Node [${i}] mismatch: got ${ln.nodeArray[i]}, expected ${tc.expectedLiunianNodes[i]}`);
+                            break;
+                        }
+                    }
+                }
+
+                if (tc.expectedLiunianWuxing) {
+                    const lnW = tallyWuxing(ln.nodeArray).elementCounts;
+                    for (let el in tc.expectedLiunianWuxing) {
+                        if (lnW[el] !== tc.expectedLiunianWuxing[el]) {
+                            errors.push(`Test ${idx+1} Liunian Wuxing ${el} mismatch: got ${lnW[el]}, expected ${tc.expectedLiunianWuxing[el]}`);
+                        }
+                    }
+                }
+            });
+
+            const errorDiv = document.getElementById('debug-error-alert');
+            if (errors.length > 0) {
+                errorDiv.style.display = 'block';
+                errorDiv.innerHTML = '<strong>自動測試校驗失敗：</strong><br>' + errors.join('<br>');
+            } else {
+                errorDiv.style.display = 'none';
+            }
+        }
+
+        // Run tests immediately on script load
+        runAutomatedTests();
+
+        // --- UI Handling ---
+
+        function calculateAll() {
+            const name = document.getElementById('input-name').value.trim();
+            const dob = document.getElementById('input-dob').value.trim();
+
+            const dobRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+            const match = dob.match(dobRegex);
+
+            if (!match) {
+                alert("請輸入正確的出生日期格式 (DD/MM/YYYY)");
+                return;
+            }
+
+            const dayStr = match[1];
+            const monthStr = match[2];
+            const yearStr = match[3];
+
+            globalState.dobDayStr = dayStr;
+            globalState.dobMonthStr = monthStr;
+            globalState.dobYearStr = yearStr;
+
+            // Age Calculation
+            const birthDate = new Date(parseInt(yearStr), parseInt(monthStr) - 1, parseInt(dayStr));
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const mDiff = today.getMonth() - birthDate.getMonth();
+            if (mDiff < 0 || (mDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+
+            document.getElementById('res-name').innerText = name || "未提供";
+            document.getElementById('res-dob').innerText = dob;
+            document.getElementById('res-age').innerText = age >= 0 ? age : 0;
+
+            // Determine Default Liunian Year based on Today (Oct 1 boundary)
+            const currentCalYear = today.getFullYear();
+            const currentMonth = today.getMonth() + 1; // 1-12
+            let defaultLiunianYear = currentCalYear;
+            if (currentMonth >= 10) {
+                defaultLiunianYear = currentCalYear + 1;
+            }
+
+            globalState.selectedLiunianYear = defaultLiunianYear;
+            populateLiunianDropdown(defaultLiunianYear);
+
+            // Compute Original
+            const A = sumDigitsAndReduce(dayStr);
+            const B = sumDigitsAndReduce(monthStr);
+            const C = sumDigitsAndReduce(yearStr.substring(0, 2));
+            const D = sumDigitsAndReduce(yearStr.substring(2, 4));
+
+            const origData = compute16Nodes(A, B, C, D);
+            globalState.originalNodes = origData.nodes;
+            globalState.originalSelfWuxing = getSelfWuxing(origData.nodes.G);
+
+            // Render Original Sections
+            renderMap('original-map', origData.nodes);
+            renderCombos('original-combos', origData.nodes, true);
+            renderThreeStages(origData.nodes);
+            renderWuxing(origData.nodeArray, globalState.originalSelfWuxing, 'orig-self-wuxing', 'orig-wuxing-tbody', 'orig-wuxing-flags');
+
+            // Render Liunian Section
+            renderLiunianSection();
+
+            // Render Debug View
+            renderDebugView(origData, A, B, C, D);
+
+            document.getElementById('results-area').style.display = 'block';
+        }
+
+        function populateLiunianDropdown(selectedYear) {
+            const select = document.getElementById('select-liunian-year');
+            select.innerHTML = '';
+            for (let y = selectedYear - 5; y <= selectedYear + 5; y++) {
+                const opt = document.createElement('option');
+                opt.value = y;
+                opt.innerText = `${y} 流年`;
+                if (y === selectedYear) opt.selected = true;
+                select.appendChild(opt);
+            }
+        }
+
+        function updateLiunianYear() {
+            const select = document.getElementById('select-liunian-year');
+            globalState.selectedLiunianYear = parseInt(select.value, 10);
+            renderLiunianSection();
+            // Re-render debug view
+            const A = sumDigitsAndReduce(globalState.dobDayStr);
+            const B = sumDigitsAndReduce(globalState.dobMonthStr);
+            const C = sumDigitsAndReduce(globalState.dobYearStr.substring(0, 2));
+            const D = sumDigitsAndReduce(globalState.dobYearStr.substring(2, 4));
+            const origData = compute16Nodes(A, B, C, D);
+            renderDebugView(origData, A, B, C, D);
+        }
+
+        function renderMap(elementId, nodes) {
+            const container = document.getElementById(elementId);
+            const n = nodes;
+            container.innerHTML = `
+                <div class="map-node">${n.A}<span>A</span></div>
+                <div class="map-node">${n.B}<span>B</span></div>
+                <div class="map-node">${n.C}<span>C</span></div>
+                <div class="map-node">${n.D}<span>D</span></div>
+                <div class="map-node" style="background:#eef6fc;">${n.E}<span>E</span></div>
+
+                <div class="map-node" style="background:#eef6fc;">${n.F}<span>F</span></div>
+                <div class="map-node" style="background:#d4efdf;">${n.G}<span>G</span></div>
+                <div class="map-node">${n.P}<span>P</span></div>
+                <div class="map-node">${n.Q}<span>Q</span></div>
+                <div class="map-node">${n.R}<span>R</span></div>
+
+                <div class="map-node">${n.H}<span>H</span></div>
+                <div class="map-node">${n.M}<span>M</span></div>
+                <div class="map-node">${n.L}<span>L</span></div>
+                <div class="map-node">${n.I}<span>I</span></div>
+                <div class="map-node">${n.K}<span>K</span></div>
+            `;
+        }
+
+        function renderCombos(elementId, nodes, includeItem13 = false) {
+            const container = document.getElementById(elementId);
+            const combos = compute12Combos(nodes);
+            let html = '';
+
+            combos.forEach(item => {
+                html += `
+                    <li class="combo-item">
+                        <div><span class="combo-title">${item.id}. ${item.title}</span> <span class="combo-num">${item.val}</span></div>
+                        <div class="combo-desc">${getExplanation(item.val)}</div>
+                    </li>
+                `;
+            });
+
+            if (includeItem13) {
+                const item3Val = combos[2].val;
+                const item13Val = computeItem13(item3Val);
+                html += `
+                    <li class="combo-item" style="background-color: #fcf8e3; padding: 8px; border-radius: 6px; margin-top: 6px;">
+                        <div><span class="combo-title">13. 隱藏號碼 (原命)</span> <span class="combo-num">${item13Val}</span></div>
+                        <div class="combo-desc">基於主性格 ${item3Val} 翻倍化簡得出。</div>
+                    </li>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        function renderThreeStages(nodes) {
+            const container = document.getElementById('three-stages-content');
+            container.innerHTML = `
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center;">
+                    <div style="border: 1px solid #ddd; padding: 8px; border-radius: 6px;">
+                        <strong>首階段 (前)</strong>
+                        <div style="font-size: 1.2rem; font-weight: bold; color: #2980b9;">${nodes.A}${nodes.B}${nodes.E}</div>
+                    </div>
+                    <div style="border: 1px solid #ddd; padding: 8px; border-radius: 6px;">
+                        <strong>中階段 (中)</strong>
+                        <div style="font-size: 1.2rem; font-weight: bold; color: #2980b9;">${nodes.E}${nodes.F}${nodes.G}</div>
+                    </div>
+                    <div style="border: 1px solid #ddd; padding: 8px; border-radius: 6px;">
+                        <strong>後階段 (後)</strong>
+                        <div style="font-size: 1.2rem; font-weight: bold; color: #2980b9;">${nodes.C}${nodes.D}${nodes.F}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderWuxing(nodeArray, selfElement, selfDisplayId, tbodyId, flagsBoxId) {
+            if (selfDisplayId) {
+                document.getElementById(selfDisplayId).innerText = selfElement;
+            }
+
+            const { elementCounts } = tallyWuxing(nodeArray);
+            const categories = buildWuxingCategories(selfElement);
+
+            const tbody = document.getElementById(tbodyId);
+            tbody.innerHTML = '';
+
+            let flags = [];
+            let selfActual = 0;
+            let careerActual = 0;
+            let ghostActual = 0;
+
+            categories.forEach(cat => {
+                const actual = elementCounts[cat.element] || 0;
+                if (cat.category === "自身") selfActual = actual;
+                if (cat.category === "事業／伴侶") careerActual = actual;
+                if (cat.category === "官鬼／疾病") ghostActual = actual;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${cat.category}</strong></td>
+                    <td>${cat.element}</td>
+                    <td>${cat.relation}</td>
+                    <td style="font-weight:bold; ${actual === 0 ? 'color:red;' : ''}">${actual}</td>
+                    <td>${cat.target}</td>
+                `;
+                tbody.appendChild(tr);
+
+                // Rule A: Zero Check
+                if (actual === 0) {
+                    flags.push(`🚩 ${cat.category}五行值 = 0`);
+                }
+            });
+
+            // Rule B: 自身 vs 事業／伴侶
+            const diffCareer = Math.abs(selfActual - careerActual);
+            if (diffCareer === 0) {
+                flags.push(`🚩 自身與事業／伴侶相差 0`);
+            } else if (diffCareer >= 3) {
+                flags.push(`🚩 自身與事業／伴侶相差 ${diffCareer}`);
+            }
+
+            // Rule C: 自身 vs 官鬼／疾病
+            const diffGhost = Math.abs(selfActual - ghostActual);
+            if (diffGhost === 0) {
+                flags.push(`🚩 自身與官鬼／疾病相差 0`);
+            } else if (diffGhost >= 3) {
+                flags.push(`🚩 自身與官鬼／疾病相差 ${diffGhost}`);
+            }
+
+            const flagsBox = document.getElementById(flagsBoxId);
+            if (flags.length > 0) {
+                flagsBox.style.display = 'block';
+                flagsBox.innerHTML = flags.map(f => `<div class="flag-item">${f}</div>`).join('');
+            } else {
+                flagsBox.style.display = 'none';
+                flagsBox.innerHTML = '';
+            }
+        }
+
+        function renderLiunianSection() {
+            const year = globalState.selectedLiunianYear;
+            const startYear = year - 1;
+            const periodStr = `適用期間：${startYear} 年 10 月 1 日 至 ${year} 年 9 月 30 日`;
+
+            document.getElementById('liunian-period-text').innerText = periodStr;
+            document.getElementById('liunian-year-val').innerText = `${year} 年`;
+
+            // Order: DOB Day -> DOB Month -> Liunian Year
+            const A = sumDigitsAndReduce(globalState.dobDayStr);
+            const B = sumDigitsAndReduce(globalState.dobMonthStr);
+            const yearStr = year.toString();
+            const C = sumDigitsAndReduce(yearStr.substring(0, 2));
+            const D = sumDigitsAndReduce(yearStr.substring(2, 4));
+
+            const lnData = compute16Nodes(A, B, C, D);
+
+            document.getElementById('liunian-g-val').innerText = lnData.nodes.G;
+
+            renderMap('liunian-map', lnData.nodes);
+            renderCombos('liunian-combos', lnData.nodes, false);
+
+            // Liunian Wuxing uses ORIGINAL self element
+            renderWuxing(lnData.nodeArray, globalState.originalSelfWuxing, null, 'liunian-wuxing-tbody', 'liunian-wuxing-flags');
+
+            // 393 / 933 Course Check in Liunian 12 Combos (Item 1-12 ONLY)
+            const combos = compute12Combos(lnData.nodes);
+            let has393or933 = false;
+            let matchedItems = [];
+
+            combos.forEach(c => {
+                if (c.val === "393" || c.val === "933") {
+                    has393or933 = true;
+                    matchedItems.push(`${c.id}. ${c.title} (${c.val})`);
+                }
+            });
+
+            const tipsBox = document.getElementById('liunian-teaching-tips');
+            if (has393or933) {
+                tipsBox.style.display = 'block';
+                tipsBox.innerHTML = `
+                    <div style="font-weight:bold; color: #d35400;">💡 教材提示：</div>
+                    <div>在 ${year} 流年 12 聯合數字中出現特定組合：${matchedItems.join('、')}。此提示僅供課程學術討論與注意事項參考，不作爲任何醫學診斷。</div>
+                `;
+            } else {
+                tipsBox.style.display = 'none';
+            }
+        }
+
+        function renderDebugView(origData, origA, origB, origC, origD) {
+            const origW = tallyWuxing(origData.nodeArray);
+
+            const lnYear = globalState.selectedLiunianYear;
+            const lnA = origA;
+            const lnB = origB;
+            const lnYearStr = lnYear.toString();
+            const lnC = sumDigitsAndReduce(lnYearStr.substring(0, 2));
+            const lnD = sumDigitsAndReduce(lnYearStr.substring(2, 4));
+            const lnData = compute16Nodes(lnA, lnB, lnC, lnD);
+            const lnW = tallyWuxing(lnData.nodeArray);
+
+            // Automatic validation assertion check
+            const origNodeCount = origData.nodeArray.length;
+            const origWuxingSum = Object.values(origW.elementCounts).reduce((a, b) => a + b, 0);
+            const lnNodeCount = lnData.nodeArray.length;
+            const lnWuxingSum = Object.values(lnW.elementCounts).reduce((a, b) => a + b, 0);
+
+            let debugText = `=== 自動調試與系統校驗 ===\n`;
+            debugText += `[校驗] 原命 16 節點數 = ${origNodeCount} (期望: 16)\n`;
+            debugText += `[校驗] 原命 五行總數 = ${origWuxingSum} (期望: 16)\n`;
+            debugText += `[校驗] 流年 16 節點數 = ${lnNodeCount} (期望: 16)\n`;
+            debugText += `[校驗] 流年 五行總數 = ${lnWuxingSum} (期望: 16)\n`;
+            debugText += `[校驗] 自身五行基準: 原命 G (${origData.nodes.G}) -> ${globalState.originalSelfWuxing}\n\n`;
+
+            debugText += `--- 原命計算明細 ---\n`;
+            debugText += `A=${origA}, B=${origB}, C=${origC}, D=${origD}\n`;
+            debugText += `E=${origData.nodes.E}, F=${origData.nodes.F}, G=${origData.nodes.G}\n`;
+            debugText += `P=${origData.nodes.P}, Q=${origData.nodes.Q}, R=${origData.nodes.R}\n`;
+            debugText += `H=${origData.nodes.H}, M=${origData.nodes.M}, L=${origData.nodes.L}\n`;
+            debugText += `I=${origData.nodes.I}, K=${origData.nodes.K}, J=${origData.nodes.J}\n`;
+            debugText += `16 節點序列: [${origData.nodeArray.join(', ')}]\n`;
+            debugText += `1-9 數字統計: ${JSON.stringify(origW.digitCounts)}\n`;
+            debugText += `五行統計: ${JSON.stringify(origW.elementCounts)}\n\n`;
+
+            debugText += `--- 流年 (${lnYear}) 計算明細 ---\n`;
+            debugText += `A=${lnA}, B=${lnB}, C=${lnC}, D=${lnD}\n`;
+            debugText += `E=${lnData.nodes.E}, F=${lnData.nodes.F}, G=${lnData.nodes.G} (流年數=${lnData.nodes.G})\n`;
+            debugText += `P=${lnData.nodes.P}, Q=${lnData.nodes.Q}, R=${lnData.nodes.R}\n`;
+            debugText += `H=${lnData.nodes.H}, M=${lnData.nodes.M}, L=${lnData.nodes.L}\n`;
+            debugText += `I=${lnData.nodes.I}, K=${lnData.nodes.K}, J=${lnData.nodes.J}\n`;
+            debugText += `16 節點序列: [${lnData.nodeArray.join(', ')}]\n`;
+            debugText += `1-9 數字統計: ${JSON.stringify(lnW.digitCounts)}\n`;
+            debugText += `五行統計: ${JSON.stringify(lnW.elementCounts)}\n`;
+
+            document.getElementById('debug-text').innerText = debugText;
+        }
+
+        function resetForm() {
+            document.getElementById('input-name').value = '';
+            document.getElementById('input-dob').value = '';
+            document.getElementById('results-area').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
